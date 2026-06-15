@@ -32,10 +32,18 @@ interface HomeViewProps {
 
 export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewProps) {
   const [openFaq, setOpenFaq] = React.useState<number | null>(null);
+  const [slideIndex, setSlideIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setSlideIndex((prev) => (prev + 1) % 3);
+    }, 10000);
+    return () => clearInterval(timer);
+  }, []);
 
   const homeFaqs = [
     {
-      q: 'How does HB Digital help businesses grow?',
+      q: 'How does Hambar help businesses grow?',
       a: 'We evaluate your sales pipelines, web applications, and database processes to implement search engine optimization (SEO), workflow automations, and customer chatbots that scale buyer inquiries and cut manual processing costs.'
     },
     {
@@ -107,36 +115,110 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
         </div>
       </section>
 
-      {/* 2. Masonry Testimonials "Loved by people all over the universe" */}
-      <section className="py-24 bg-white" id="loved-by-universe">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-           <div className="text-center max-w-2xl mx-auto mb-16">
-             <h2 className="text-4xl font-extrabold text-black tracking-tight">Loved by people all over the universe</h2>
-             <p className="text-neutral-500 mt-4 text-sm">Every AI is used by millions of people around the globe. Our APIs have fan bases and people fight for us over twitter.</p>
-           </div>
-           
-           {/* Custom Staggered Masonry Grid specifically designed for this */}
-           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[minmax(0,1fr)] pb-12">
-             {[
-               { name: "Cathy Lee", col: "md:col-span-2", row: "md:row-span-1", role: "Product Manager", text: "I can't imagine going back to how things were before this AI. It has not only improved my work efficiency but also my daily life." },
-               { name: "Eva Green", col: "md:col-span-1", row: "md:row-span-2", role: "Operations Director", text: "The efficiency it brings is unmatched. It's a vital tool that has helped us cut costs and improve our end product significantly. We feel very thankful." },
-               { name: "Frank Moore", col: "md:col-span-1", row: "md:row-span-1", role: "Project Manager", text: "A robust solution that fits perfectly." },
-               { name: "Mia Turner", col: "md:col-span-2", row: "md:row-span-2", role: "Systems Integrator", text: "It's simply revolutionary! The way it integrates with our existing systems and enhances them is nothing short of miraculous. Everything feels cohesive." },
-               { name: "Henry Ford", col: "md:col-span-1", row: "md:row-span-1", role: "Operations Analyst", text: "It has saved us countless hours." },
-               { name: "Samuel Lee", col: "md:col-span-2", row: "md:row-span-1", role: "Futurist", text: "It's the future, now. Adopting this AI has put us years ahead of the competition in terms of operational efficiency and innovation." },
-             ].map((msg, idx) => (
-                <div key={idx} className={`bg-neutral-50 border border-neutral-100 rounded-2xl p-6 flex flex-col justify-between ${msg.col} ${msg.row} hover:-translate-y-1 transition-transform`}>
-                  <p className="text-neutral-700 text-sm leading-relaxed mb-6">"{msg.text}"</p>
-                  <div className="flex items-center gap-3">
-                     <div className="h-10 w-10 bg-neutral-200 rounded-full flex items-center justify-center text-xs font-bold text-neutral-500 shrink-0">{msg.name.charAt(0)}</div>
-                     <div>
-                       <h4 className="font-bold text-black text-sm">{msg.name}</h4>
-                       <p className="text-xs text-neutral-500">{msg.role}</p>
-                     </div>
-                  </div>
-                </div>
-             ))}
-           </div>
+      {/* 2. Custom Slider Testimonials replacing masonry testimonials */}
+      <section className="py-20 bg-white relative overflow-hidden" id="loved-by-universe">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          {/* Main Display container */}
+          <div className="relative overflow-hidden bg-slate-50/60 border border-slate-100 rounded-[2.5rem] p-6 sm:p-10 md:p-14 min-h-[480px]">
+            
+            {/* Testimonials Slide Presenter */}
+            <div className="relative z-10">
+              <AnimatePresence mode="wait">
+                {[
+                  {
+                    title: "MINI partners with Hambar to power its new era of auto-retail experience",
+                    quote: "At MINI, we decided it was time to create an end-to-end purchasing and finance journey for the consumer, and it was important to create something more than a lead generator to facilitate the complete transaction for any MINI customer, any place, any time. Our partnership with Hambar has enabled us not only to catch up with industry leaders, but also to set new benchmarks in digital auto-retail, which the usual suspects in the industry could not provide.",
+                    name: "Mike Peyton",
+                    role: "Chief Motorer and Vice-President of MINI of the Americas",
+                    image: "/mike_peyton.svg"
+                  },
+                  {
+                    title: "Ikano Bank gains competitive edge with Hambar",
+                    quote: "We are pleased to be working with Hambar as our strategic platform partner. Hambar's smart technology solutions are well-recognized in the finance and leasing space, and deploying our synchronized custom software integrations enables us to maintain a competitive edge in today's highly dynamic marketplace. With its powerful integration engines, Hambar will streamline our processes, enabling faster on-boarding of new partners and speed up new product introductions across markets.",
+                    name: "Henrik Staulund",
+                    role: "Chief Commercial Officer at Ikano Bank",
+                    image: "/henrik.png"
+                  },
+                  {
+                    title: "Haydock Finance finds success with Hambar's Marketplace",
+                    quote: "I'd absolutely recommend both the custom software setups and the team at Hambar. The products are brilliant. It works fantastically well. And Hambar has been responsive to our needs. Quickly made any changes that we required.",
+                    name: "Mike Boyes",
+                    role: "Head of Vendor, Haydock Finance",
+                    image: "/mike_boyes.webp",
+                    showPlayButton: true
+                  }
+                ].map((item, idx) => {
+                  if (idx !== slideIndex) return null;
+                  return (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.45, ease: "easeOut" }}
+                      className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center"
+                    >
+                      {/* Left: Text Details */}
+                      <div className="lg:col-span-8 space-y-4 md:space-y-6 text-left">
+                        <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-neutral-900 tracking-tight leading-snug font-sans">
+                          {item.title}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-neutral-500 font-medium leading-relaxed font-sans max-w-3xl">
+                          "{item.quote}"
+                        </p>
+                        <div className="pt-2 md:pt-4">
+                          <h4 className="text-base sm:text-lg font-bold text-neutral-900 font-sans">
+                            {item.name}
+                          </h4>
+                          <p className="text-xs sm:text-sm text-neutral-400 font-medium font-sans mt-0.5">
+                            {item.role}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Right: Picture Frame */}
+                      <div className="lg:col-span-4 flex justify-center lg:justify-end">
+                        <div className="relative w-full max-w-[320px] aspect-square rounded-[2rem] overflow-hidden bg-neutral-100 border border-slate-200/50 shadow-md">
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            referrerPolicy="no-referrer"
+                            className="w-full h-full object-cover rounded-[2rem]"
+                          />
+                          {item.showPlayButton && (
+                            <div className="absolute bottom-4 left-4 flex items-center justify-center">
+                              <span className="h-10 w-10 bg-white/90 rounded-full flex items-center justify-center shadow-lg border border-neutral-100 hover:scale-105 active:scale-95 duration-200 cursor-pointer">
+                                <svg className="w-4 h-4 text-brand-dark fill-current ml-0.5" viewBox="0 0 24 24">
+                                  <path d="M8 5v14l11-7z" />
+                                </svg>
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Slider Progress Navigation dots precisely matching image style (horizontal bar design) */}
+          <div className="flex justify-center items-center gap-2 mt-8 md:mt-10">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setSlideIndex(i)}
+                className={`h-1.5 rounded-full transition-all duration-300 ease-out cursor-pointer ${
+                  i === slideIndex
+                    ? "w-10 bg-slate-800"
+                    : "w-6 bg-slate-200 hover:bg-slate-300"
+                }`}
+                aria-label={`Go to slide ${i + 1}`}
+              />
+            ))}
+          </div>
+
         </div>
       </section>
 

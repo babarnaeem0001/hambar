@@ -219,7 +219,7 @@ export default function BookView({ initialServiceName, onClose, isModal }: BookV
   const referralsList = [
     'Twitter / X',
     'Google Search',
-    'HB Digital Magazine',
+    'Hambar Magazine',
     'Personal Recommendation',
     'LinkedIn',
     'Y Combinator / Startup Forums',

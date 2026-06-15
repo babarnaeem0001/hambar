@@ -986,7 +986,7 @@ export const projects: ProjectItem[] = [
 
 export const faqHub: FAQItem[] = [
   // General
-  { id: 'gen-1', question: 'Who founded HB Digital?', answer: 'HB Digital was co-founded by Hamid Saleem and Babar Naeem to provide growing companies with elite, actionable technology, AI solutions, and software development growth frameworks.', category: 'General' },
+  { id: 'gen-1', question: 'Who founded Hambar?', answer: 'Hambar was co-founded by Hamid Saleem and Babar Naeem to provide growing companies with elite, actionable technology, AI solutions, and software development growth frameworks.', category: 'General' },
   { id: 'gen-2', question: 'Do you work with non-technical business founders?', answer: 'Yes! Over 80% of our clients are non-technical business owners. We speak plain business language, avoid obscure jargon, and focus entirely on translating technical solutions into real business outcomes.', category: 'General' },
   
   // Solutions

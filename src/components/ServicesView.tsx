@@ -184,27 +184,252 @@ export default function ServicesView({ onPageChange, initialServiceId, onOpenBoo
   return (
     <div className="bg-white text-neutral-900 font-sans min-h-screen selection:bg-neutral-950 selection:text-white" id="services-main-view">
       
-      {/* 1. Header Hero Segment */}
-      <section className="border-b border-neutral-200 py-16 sm:py-20 animate-fade-in" id="services-hero">
-        <div className="max-w-4xl mx-auto px-4 text-center space-y-4">
-          <h1 className="text-3xl sm:text-5xl font-bold text-neutral-900 tracking-tight font-sans">
-            Start a Project
-          </h1>
-          <p className="text-neutral-500 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed font-sans">
-            Detail your specifications to receive a customized professional proposal built to your precise corporate targets.
-          </p>
+      {/* 1. Header Hero Segment with 3D Hovering Devices Showcase */}
+      <section className="border-b border-neutral-200 py-12 md:py-16 animate-fade-in bg-gradient-to-b from-slate-50/50 to-white overflow-hidden relative" id="services-hero">
+        {/* Subtle decorative background grids or orbits */}
+        <div className="absolute inset-0 pointer-events-none opacity-20 select-none overflow-hidden z-0">
+          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="dotPattern" width="32" height="32" patternUnits="userSpaceOnUse">
+                <circle cx="16" cy="16" r="1" fill="#cbd5e1" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#dotPattern)" />
+          </svg>
+        </div>
 
-          {/* Core Search Controller */}
-          <div className="relative max-w-md mx-auto pt-2" id="service-search-wrapper">
-            <Search size={14} className="absolute left-3 top-5 text-neutral-400" />
-            <input
-              type="text"
-              placeholder="Search services..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white border border-neutral-200 rounded-md pl-9 pr-4 py-2 text-xs focus:outline-none focus:border-neutral-950 transition-colors font-sans focus:ring-1 focus:ring-neutral-200"
-              id="service-search-input"
-            />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+            
+            {/* Left Column: Hovering MacBook Pro */}
+            <div className="lg:col-span-4 hidden lg:flex justify-center items-center relative">
+              <motion.div
+                className="flex flex-col items-center"
+                animate={{
+                  y: [0, -10, 0],
+                }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 6,
+                  ease: "easeInOut"
+                }}
+              >
+                {/* Laptop Screen Portion */}
+                <div className="relative bg-neutral-950 p-2 pb-0.5 rounded-t-[14px] border border-neutral-800 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.18)]">
+                  <div className="w-[200px] sm:w-[240px] h-[120px] sm:h-[144px] bg-slate-900 rounded-[8px] overflow-hidden relative flex flex-col p-1.5 justify-between">
+                    {/* Glare effect */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/10 select-none pointer-events-none z-10" />
+                    
+                    {/* Dashboard Header */}
+                    <div className="flex items-center justify-between border-b border-white/10 pb-1 text-[7px] font-sans text-neutral-400">
+                      <div className="flex gap-1 items-center">
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-400/80" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-yellow-400/80" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-400/80" />
+                        <span className="ml-1 text-[5px] text-neutral-500 font-bold uppercase tracking-wider">Hambar Dashboard</span>
+                      </div>
+                      <div className="bg-neutral-850 px-1 py-0.5 rounded text-[5px] text-neutral-400">Active Pipeline</div>
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/85 animate-pulse" />
+                    </div>
+
+                    {/* Dashboard Content Panel */}
+                    <div className="flex-1 flex gap-1.5 pt-1.5 overflow-hidden">
+                      {/* Sidebar Mock */}
+                      <div className="w-10 bg-neutral-950/40 rounded p-1 flex flex-col gap-1 select-none">
+                        <div className="w-full h-1 bg-brand/30 rounded-sm" />
+                        <div className="w-3/4 h-0.5 bg-neutral-700/55 rounded-sm" />
+                        <div className="w-2/3 h-0.5 bg-neutral-700/55 rounded-sm" />
+                        <div className="w-4/5 h-0.5 bg-neutral-700/55 rounded-sm" />
+                      </div>
+
+                      {/* Main Grid Mock */}
+                      <div className="flex-1 flex flex-col justify-between">
+                        <div className="grid grid-cols-2 gap-1 mb-1">
+                          {/* Card 1 */}
+                          <div className="bg-neutral-950/20 border border-white/5 rounded p-0.5 text-left">
+                            <span className="text-[5px] text-slate-500 font-bold block leading-none">CONVERSIONS</span>
+                            <span className="text-[8px] font-bold text-white block mt-0.5">2,845</span>
+                          </div>
+                          {/* Card 2 */}
+                          <div className="bg-neutral-950/20 border border-white/5 rounded p-0.5 text-left">
+                            <span className="text-[5px] text-slate-500 font-bold block leading-none">SEO TRAFFIC</span>
+                            <span className="text-[8px] font-bold text-brand block mt-0.5">+143%</span>
+                          </div>
+                        </div>
+
+                        {/* Chart Container Mock */}
+                        <div className="flex-1 bg-neutral-950/45 border border-white/10 rounded p-1 flex flex-col justify-between">
+                          <span className="text-[5px] text-emerald-400/80 font-mono font-bold leading-none">LIVE PERFORMANCE</span>
+                          <div className="flex items-end justify-between h-7 pt-1 px-1 gap-0.5">
+                            <div className="w-1.5 h-2 bg-neutral-800 rounded-t-sm" />
+                            <div className="w-1.5 h-3 bg-neutral-800 rounded-t-sm" />
+                            <div className="w-1.5 h-4.5 bg-brand-dark/70 rounded-t-sm" />
+                            <div className="w-1.5 h-5 bg-brand rounded-t-sm" />
+                            <div className="w-1.5 h-3 bg-neutral-800 rounded-t-sm" />
+                            <div className="w-1.5 h-6 bg-emerald-400 rounded-t-sm" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Screen Footer */}
+                    <div className="flex items-center justify-between text-[5px] font-sans border-t border-white/10 pt-1 text-slate-500 leading-none">
+                      <span>Sync Active</span>
+                      <span>v1.0.4</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Laptop Lower Base / Keyboard */}
+                <div className="relative bg-slate-300 w-[240px] sm:w-[280px] h-3 rounded-b-[4px] border-b border-slate-400 shadow-[0_12px_20px_rgba(0,0,0,0.1)] flex items-center justify-center">
+                  {/* Notch Center */}
+                  <div className="absolute top-0 w-10 h-1 bg-slate-400 rounded-b" />
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Middle Column: Centered Text */}
+            <div className="lg:col-span-4 flex flex-col items-center text-center space-y-6">
+              <div className="space-y-3">
+                <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-950 tracking-tight leading-tight font-sans">
+                  Start a Project
+                </h1>
+                <p className="text-neutral-500 text-xs sm:text-sm max-w-sm mx-auto leading-relaxed font-sans">
+                  Detail your specifications to launch your custom dashboard application.
+                </p>
+              </div>
+
+              {/* Core Search Controller */}
+              <div className="relative w-full max-w-sm mx-auto" id="service-search-wrapper">
+                <Search size={14} className="absolute left-3 top-3.5 text-neutral-400" />
+                <input
+                  type="text"
+                  placeholder="Search services..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-white border border-neutral-200 rounded-md pl-9 pr-4 py-2 text-xs focus:outline-none focus:border-neutral-950 transition-colors font-sans focus:ring-1 focus:ring-neutral-200 shadow-sm"
+                  id="service-search-input"
+                />
+              </div>
+            </div>
+
+            {/* Right Column: Hovering iPhone & Apple Watch */}
+            <div className="lg:col-span-4 hidden lg:flex justify-center items-center gap-6 sm:gap-8 relative">
+              {/* iPhone */}
+              <motion.div
+                className="relative"
+                animate={{
+                  y: [0, -14, 0],
+                  rotate: [-3, 0, -3]
+                }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 5,
+                  ease: "easeInOut"
+                }}
+              >
+                <div className="relative w-[82px] sm:w-[94px] h-[155px] sm:h-[180px] bg-slate-900 rounded-[20px] p-1.5 shadow-[0_20px_35px_rgba(0,0,0,0.12)] border-2 border-slate-950">
+                  {/* Inner screen container */}
+                  <div className="w-full h-full bg-zinc-950 rounded-[15px] overflow-hidden relative flex flex-col p-1.5 justify-between">
+                    
+                    {/* Notch area */}
+                    <div className="absolute top-0.5 inset-x-0 flex justify-center z-20">
+                      <span className="w-6 h-1 bg-black rounded-full" />
+                    </div>
+
+                    {/* Header indicators */}
+                    <div className="flex justify-between items-center text-[5px] text-slate-400 px-0.5 pt-0.5 select-none pointer-events-none">
+                      <span>12:00</span>
+                      <div className="flex gap-0.5">
+                        <span>WiFi</span>
+                        <span>100%</span>
+                      </div>
+                    </div>
+
+                    {/* Grid representation */}
+                    <div className="flex-1 space-y-1 pt-1">
+                      <div className="w-1/2 h-2.5 bg-neutral-800 rounded-sm" />
+                      <div className="grid grid-cols-2 gap-1">
+                        <div className="h-6 bg-brand/25 border border-brand/20 rounded-md flex flex-col justify-center p-0.5">
+                          <span className="text-[4px] font-bold text-brand">APP STATS</span>
+                          <span className="text-[5px] text-white">99.8%</span>
+                        </div>
+                        <div className="h-6 bg-slate-800 rounded-md flex flex-col justify-center p-0.5">
+                          <span className="text-[4px] font-bold text-slate-400">USERS</span>
+                          <span className="text-[5px] text-white">12.4K</span>
+                        </div>
+                      </div>
+                      <div className="h-10 bg-neutral-800/80 rounded-md p-1 flex flex-col gap-0.5 justify-center">
+                        <span className="text-[4px] text-slate-300">Conversion Funnel</span>
+                        <div className="w-full h-1 bg-neutral-900 rounded-full overflow-hidden">
+                          <div className="w-4/5 h-full bg-emerald-400" />
+                        </div>
+                        <span className="text-[4px] text-emerald-400 text-right font-mono">+18% Today</span>
+                      </div>
+                    </div>
+
+                    {/* Soft touch button bar */}
+                    <div className="flex justify-center select-none pt-0.5">
+                      <span className="w-8 h-0.5 bg-neutral-700 rounded-full" />
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Apple Watch */}
+              <motion.div
+                className="relative"
+                animate={{
+                  y: [0, 12, 0],
+                  rotate: [2, -2, 2]
+                }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 4.5,
+                  ease: "easeInOut",
+                  delay: 0.5
+                }}
+              >
+                <div className="relative flex flex-col items-center">
+                  {/* Watch Top Strap */}
+                  <div className="w-7 h-6 bg-neutral-850 rounded-t-md border-t border-slate-700/50" />
+
+                  {/* Apple Watch Case */}
+                  <div className="relative w-[64px] sm:w-[74px] h-[74px] sm:h-[84px] bg-slate-900 rounded-[14px] p-1 border border-neutral-950 shadow-[0_15px_30px_rgba(0,0,0,0.18)] flex items-center justify-center">
+                    {/* Digital Crown (Physical button) */}
+                    <div className="absolute right-0 top-[22%] translate-x-1 w-1.5 h-3.5 bg-zinc-700 rounded-r shadow border border-neutral-600 border-l-0" />
+                    
+                    {/* Side Button */}
+                    <div className="absolute right-0 top-[52%] translate-x-0.5 w-[2px] h-4 bg-zinc-800 rounded-r border border-neutral-750" />
+
+                    {/* Inner deep black display */}
+                    <div className="w-full h-full rounded-[10px] bg-black flex flex-col items-center justify-between p-1.5 relative overflow-hidden border border-slate-850">
+                      {/* Status bar */}
+                      <div className="w-full flex justify-between items-center text-[5px] text-neutral-400">
+                        <span>09:41</span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                      </div>
+                      
+                      {/* Apple Activity Rings Centerpiece */}
+                      <div className="relative w-8 h-8 flex items-center justify-center">
+                        <div className="absolute w-[28px] h-[28px] rounded-full border border-red-500/80 pointer-events-none" />
+                        <div className="absolute w-[20px] h-[20px] rounded-full border border-emerald-400/80 pointer-events-none" />
+                        <div className="absolute w-[12px] h-[12px] rounded-full border border-sky-400/80 pointer-events-none" />
+                      </div>
+
+                      {/* Watch metrics */}
+                      <div className="text-[5.5px] uppercase text-emerald-400 font-mono tracking-wider font-bold">
+                        SECURE
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Watch Bottom Strap */}
+                  <div className="w-7 h-6 bg-neutral-850 rounded-b-md border-b border-slate-700/50" />
+                </div>
+              </motion.div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -221,7 +446,7 @@ export default function ServicesView({ onPageChange, initialServiceId, onOpenBoo
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {filteredCategories.length === 0 ? (
             <div className="text-center py-20 border border-neutral-200/60 bg-white/50 backdrop-blur-md rounded-2xl space-y-4 max-w-xl mx-auto" id="no-services-state">
-              <span className="text-xs font-mono text-neutral-400 uppercase tracking-widest">No Matches Found</span>
+              <span className="text-xs font-sans text-neutral-400 uppercase tracking-widest font-semibold">No Matches Found</span>
               <p className="text-xs text-neutral-500 max-w-sm mx-auto">
                 No services match your active search filter. Reset the query to view the full directory catalog.
               </p>
@@ -297,7 +522,7 @@ export default function ServicesView({ onPageChange, initialServiceId, onOpenBoo
                         <div className={`space-y-0.5 transition-all duration-300 transform ${
                           isActive ? 'translate-x-1 pl-0.5' : 'opacity-80'
                         }`}>
-                          <span className={`text-[9px] font-mono tracking-widest uppercase transition-colors duration-300 ${
+                          <span className={`text-[9px] font-sans tracking-widest uppercase transition-colors duration-300 ${
                             isActive ? 'text-neutral-500 font-extrabold' : 'text-neutral-400 group-hover:text-neutral-500'
                           }`}>
                             0{idx + 1} / {cat.id.split('-')[0].slice(0, 8)}
@@ -329,15 +554,15 @@ export default function ServicesView({ onPageChange, initialServiceId, onOpenBoo
                         <div 
                           key={svc.id} 
                           onClick={() => setSelectedSvc(svc)}
-                          className="group relative overflow-hidden rounded-[24px] bg-white/40 backdrop-blur-xl border border-neutral-200/50 shadow-sm hover:shadow-[0_24px_50px_rgba(0,0,0,0.06)] hover:border-neutral-400/40 hover:-translate-y-0.5 active:scale-[0.985] transition-all duration-300 ease-out cursor-pointer flex flex-col justify-between p-5 h-full min-h-[160px]"
+                          className="group relative overflow-hidden rounded-[14px] bg-white/40 backdrop-blur-xl border border-neutral-200/50 shadow-sm hover:shadow-[0_16px_32px_rgba(0,0,0,0.04)] hover:border-neutral-400/40 hover:-translate-y-0.5 active:scale-[0.985] transition-all duration-300 ease-out cursor-pointer flex flex-col justify-between p-3.5 h-full min-h-[115px]"
                           id={`service-card-${svc.id}`}
                         >
                           {/* Quiet highlight glare sweep animation on hover */}
                           <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none z-10" />
 
                           {/* Skill name structured directly without surrounding boxes */}
-                          <div className="relative z-0 flex-1 flex items-center justify-start pb-8 pt-2">
-                            <h3 className="font-extrabold text-sm sm:text-base text-neutral-950 leading-snug tracking-tight text-left">
+                          <div className="relative z-0 flex-1 flex items-center justify-start pb-3 pt-1.5">
+                            <h3 className="font-extrabold text-xs sm:text-sm text-neutral-950 leading-snug tracking-tight text-left">
                               {svc.name}
                             </h3>
                           </div>
@@ -370,7 +595,7 @@ export default function ServicesView({ onPageChange, initialServiceId, onOpenBoo
       {/* 3. Next.js Styled Vercel Block - Redirect to Contact Page */}
       <section className="relative border-t border-neutral-200 py-16 sm:py-20 bg-neutral-50 z-10" id="services-contact-redirect">
         <div className="max-w-3xl mx-auto px-4 text-center space-y-6">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 font-semibold">Start a Direct Engagement</span>
+          <span className="text-[10px] font-sans uppercase tracking-widest text-neutral-400 font-bold">Start a Direct Engagement</span>
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900">
             Have a Specific Technology Target in Mind?
           </h2>
@@ -417,11 +642,7 @@ export default function ServicesView({ onPageChange, initialServiceId, onOpenBoo
               >
                 {/* Header Section */}
                 <div className="px-6 sm:px-10 py-6 border-b border-neutral-100 flex items-center justify-between bg-white/80 backdrop-blur-md sticky top-0 z-10">
-                  <div className="space-y-1">
-                    <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-neutral-400 bg-neutral-100 px-2.5 py-1 rounded-full">
-                      {selectedSvc.category.toUpperCase().replace('-', ' ')}
-                    </span>
-                  </div>
+                  <div />
                   <button
                     onClick={() => setSelectedSvc(null)}
                     className="p-2 text-neutral-400 hover:text-neutral-950 rounded-full hover:bg-neutral-100 transition-all duration-300 transform hover:rotate-90 cursor-pointer border border-neutral-200/40"
@@ -439,14 +660,11 @@ export default function ServicesView({ onPageChange, initialServiceId, onOpenBoo
                     <h2 className="text-2xl sm:text-3xl font-extrabold text-neutral-950 tracking-tight leading-tight">
                       {currentDetails.title}
                     </h2>
-                    <p className="text-neutral-500 font-mono text-[11px] leading-relaxed max-w-xl pl-1 border-l-2 border-brand">
-                      {currentDetails.tagline}
-                    </p>
                   </div>
 
                   {/* Overview Block */}
-                  <section className="bg-neutral-50/70 rounded-2xl p-5 border border-neutral-100">
-                    <h3 className="text-xs font-mono uppercase tracking-widest text-neutral-400 mb-2 font-bold">Service Overview</h3>
+                  <section className="space-y-2">
+                    <h3 className="text-xs font-sans uppercase tracking-widest text-neutral-400 font-semibold md:font-bold">Overview</h3>
                     <p className="text-sm font-sans leading-relaxed text-neutral-700">
                       {currentDetails.overview}
                     </p>
@@ -454,23 +672,23 @@ export default function ServicesView({ onPageChange, initialServiceId, onOpenBoo
 
                   {/* Section: Frequently Asked Questions (Accordion) */}
                   <section className="space-y-4 pt-4 border-t border-neutral-100">
-                    <h3 className="text-xs font-mono uppercase tracking-widest text-neutral-400 flex items-center gap-2 font-bold">
+                    <h3 className="text-xs font-sans uppercase tracking-widest text-neutral-400 flex items-center gap-2 font-bold">
                       <HelpCircle size={13} className="text-neutral-450" />
-                      Strategic Insights & FAQs
+                      FAQS
                     </h3>
-                    <div className="space-y-2.5">
+                    <div className="divide-y divide-neutral-100">
                       {currentDetails.faqs.map((faq, idx) => {
                         const isOpen = activeFaqIndex === idx;
                         return (
-                          <div key={idx} className="border border-neutral-200/60 rounded-xl overflow-hidden bg-white">
+                          <div key={idx} className="py-3">
                             <button
                               onClick={() => setActiveFaqIndex(isOpen ? null : idx)}
-                              className="w-full flex items-center justify-between p-4 text-left font-sans font-bold text-xs text-neutral-900 hover:bg-neutral-50 transition-colors cursor-pointer"
+                              className="w-full flex items-center justify-between text-left font-sans font-bold text-xs text-neutral-900 transition-colors cursor-pointer py-1"
                             >
                               <span>{faq.question}</span>
                               <ChevronRight 
                                 size={12} 
-                                className={`text-neutral-400 shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-90' : ''}`} 
+                                className={`text-neutral-450 shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-90' : ''}`} 
                               />
                             </button>
                             <AnimatePresence initial={false}>
@@ -481,7 +699,7 @@ export default function ServicesView({ onPageChange, initialServiceId, onOpenBoo
                                   exit={{ height: 0, opacity: 0 }}
                                   transition={{ duration: 0.25, ease: "easeInOut" }}
                                 >
-                                  <div className="px-4 pb-4 pt-1 text-xs leading-relaxed text-neutral-500 bg-neutral-50/50 border-t border-neutral-100 font-sans">
+                                  <div className="pt-2 pb-1 text-xs leading-relaxed text-neutral-500 font-sans">
                                     {faq.answer}
                                   </div>
                                 </motion.div>

@@ -27,7 +27,7 @@ export default function Footer({ onPageChange }: FooterProps) {
           {/* Column 1: Company Logo & Info */}
           <div className="space-y-4" id="footer-col-about">
             <div className="flex items-center cursor-pointer h-10 md:h-12" onClick={() => handleSectionClick('home')}>
-              <img src="/logo.png" alt="HB Digital" className="h-full w-auto object-contain" />
+              <img src="/logo.png" alt="Hambar" className="h-full w-auto object-contain" />
             </div>
             <p className="text-neutral-400 text-sm leading-relaxed">
               Founded by Hamid Saleem & Babar Naeem. We help growing companies streamline operations, integrate custom-trained AI architectures, build software, and acquire organic buyer pipelines.
@@ -164,7 +164,7 @@ export default function Footer({ onPageChange }: FooterProps) {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-neutral-900 text-xs text-neutral-500 flex flex-col sm:flex-row justify-between items-center gap-4" id="footer-bottom">
-          <p>© {currentYear} HB Digital. All rights reserved. Strategic Business & Technical Services.</p>
+          <p>© {currentYear} Hambar. All rights reserved. Strategic Business & Technical Services.</p>
           <div className="flex gap-4">
             <button onClick={() => handleSectionClick('about')} className="hover:text-neutral-400 transition-colors">About Us</button>
             <button onClick={() => handleSectionClick('contact')} className="hover:text-neutral-400 transition-colors">Privacy Policy</button>

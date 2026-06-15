@@ -134,7 +134,7 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
                 </nav>
                 <div className="pt-4 border-t border-slate-200">
                   <p className="text-[10px] text-slate-400 font-mono leading-relaxed">
-                    Published and audited strictly under HB Digital guidelines. Hamid Saleem & Babar Naeem.
+                    Published and audited strictly under Hambar guidelines. Hamid Saleem & Babar Naeem.
                   </p>
                 </div>
               </div>
@@ -216,7 +216,7 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
             <div className="max-w-4xl mx-auto px-4 text-center space-y-6 relative z-10">
               <span className="text-xs font-mono uppercase bg-neutral-900 text-white px-3 py-1 rounded-full font-bold">The Strategic Brief</span>
               <h1 className="text-4xl md:text-6xl font-extrabold text-neutral-900 tracking-tight bg-clip-text bg-gradient-to-b from-neutral-950 to-neutral-600">
-                The HB Digital Magazine
+                The Hambar Magazine
               </h1>
               <p className="text-neutral-500 text-sm max-w-2xl mx-auto leading-relaxed">
                 Refined blueprints, market perspectives, and step-by-step systems tutorials published directly by technology specialists Hamid Saleem and Babar Naeem.

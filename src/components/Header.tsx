@@ -40,7 +40,7 @@ export default function Header({ activePage, onPageChange, onOpenBookingModal }:
           id="logo-container"
         >
           <div className="shrink-0 flex items-center justify-center transition-transform group-hover:scale-105 duration-300">
-            <img src="/logo.png" alt="HB Digital" className="h-8 md:h-10 w-auto object-contain" />
+            <img src="/logo.png" alt="Hambar" className="h-8 md:h-10 w-auto object-contain" />
           </div>
         </div>
 

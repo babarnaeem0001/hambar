@@ -35,7 +35,7 @@ export default function AboutView({ onPageChange, onOpenBookingModal }: AboutVie
         <div className="max-w-4xl mx-auto px-4 text-center space-y-4">
           <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">Our Story & Core Values</h1>
           <p className="text-slate-600 text-sm max-w-2xl mx-auto leading-relaxed">
-            HB Digital is an elite software engineering and custom technology solutions firm designed to transition companies safely and securely into the high-performance digital era.
+            Hambar is an elite software engineering and custom technology solutions firm designed to transition companies safely and securely into the high-performance digital era.
           </p>
         </div>
       </section>
@@ -47,10 +47,10 @@ export default function AboutView({ onPageChange, onOpenBookingModal }: AboutVie
             <div className="space-y-6">
               <h2 className="text-2xl font-extrabold text-slate-950 tracking-tight">Founded on Practical Technology Execution</h2>
               <p className="text-slate-600 text-sm leading-relaxed">
-                HB Digital was founded by **Hamid Saleem** and **Babar Naeem** to help businesses build, secure, and scale modern software products, AI workflows, and high-performance speed platforms.
+                Hambar was founded by **Hamid Saleem** and **Babar Naeem** to help businesses build, secure, and scale modern software products, AI workflows, and high-performance speed platforms.
               </p>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Before launching HB Digital, Hamid and Babar recognized a recurring issue: business managers receive slide decks and abstract diagrams, but lack production-ready, custom-engineered source code. They structured HB Digital as a dedicated developers ecosystem that translates technical specifications into robust, durable corporate systems.
+                Before launching Hambar, Hamid and Babar recognized a recurring issue: business managers receive slide decks and abstract diagrams, but lack production-ready, custom-engineered source code. They structured Hambar as a dedicated developers ecosystem that translates technical specifications into robust, durable corporate systems.
               </p>
               <div className="pt-2">
                 <button
