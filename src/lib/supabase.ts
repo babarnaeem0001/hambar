@@ -1,28 +1,21 @@
 import { createClient } from '@supabase/supabase-js';
 
-let rawUrl = String(import.meta.env.VITE_SUPABASE_URL || '').replace(/['"]/g, '').trim().replace(/\/$/, "");
-let supabaseAnonKey = String(import.meta.env.VITE_SUPABASE_ANON_KEY || '').replace(/['"]/g, '').trim();
+let supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || '').replace(/\/rest\/v1\/?$/, '').replace(/\/$/, '');
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-if (rawUrl && !rawUrl.startsWith('http')) {
-  rawUrl = `https://${rawUrl}`;
-}
-
-// If it's just the project ID (e.g. "xurj..." without ".supabase.co")
-if (rawUrl && rawUrl.startsWith('https://') && !rawUrl.substring(8).includes('.') && !rawUrl.includes('localhost')) {
-  rawUrl = `${rawUrl}.supabase.co`;
-}
-
-// Ensure URL is structurally valid
+let isValid = true;
 try {
-  if (rawUrl) {
-    new URL(rawUrl);
+  if (supabaseUrl) {
+    new URL(supabaseUrl);
+  } else {
+    isValid = false;
   }
 } catch (e) {
-  console.error("Invalid Supabase URL:", rawUrl);
-  rawUrl = ''; // will disable client
+  isValid = false;
+  console.error("VITE_SUPABASE_URL is not a valid URL. It should look like 'https://xxx.supabase.co'. Currently it is:", supabaseUrl);
 }
 
-export const supabase = rawUrl && supabaseAnonKey 
-  ? createClient(rawUrl, supabaseAnonKey) 
+export const supabase = (supabaseUrl && supabaseAnonKey && isValid)
+  ? createClient(supabaseUrl, supabaseAnonKey) 
   : null;
 

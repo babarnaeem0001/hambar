@@ -27,13 +27,15 @@ export default function AdminView() {
   // Data
   const [chartType, setChartType] = useState<'area' | 'bar'>('area');
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
-  const [newAdminForm, setNewAdminForm] = useState({ name: '', email: '', role: 'Admin', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120' });
+  const [newAdminForm, setNewAdminForm] = useState({ name: '', email: '', role: 'Admin', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120', password: '' });
   const [editingAdminId, setEditingAdminId] = useState<string | null>(null);
   const [editingAdminForm, setEditingAdminForm] = useState({ name: '', email: '', role: '', avatar: '' });
   const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
   const [articles, setArticles] = useState<Article[]>([]);
   const [chartData, setChartData] = useState<any[]>([]);
   const [adminUsers, setAdminUsers] = useState<any[]>([]);
+  const [currentAdmin, setCurrentAdmin] = useState<any>(null);
+  const [profilePfpLink, setProfilePfpLink] = useState('');
   
   // CRM Filters
   const [crmTypeFilter, setCrmTypeFilter] = useState<'all' | 'contact' | 'booking'>('all');
@@ -59,16 +61,21 @@ export default function AdminView() {
   }, []);
 
   const loadData = async () => {
-    const [subs, arts, charts, admins] = await Promise.all([
+    const [subs, arts, charts, admins, currAdmin] = await Promise.all([
       adminStore.getSubmissions(),
       adminStore.getArticles(),
       adminStore.getChartData(),
-      adminStore.getAdmins()
+      adminStore.getAdmins(),
+      adminStore.getCurrentAdmin()
     ]);
     setSubmissions(subs);
     setArticles(arts);
     setChartData(charts);
     setAdminUsers(admins);
+    setCurrentAdmin(currAdmin);
+    if (currAdmin && !profilePfpLink) {
+      setProfilePfpLink(currAdmin.avatar || '');
+    }
   };
 
   useEffect(() => {
@@ -181,13 +188,36 @@ export default function AdminView() {
     triggerToast('Mock lead added.');
   };
 
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>, isNew: boolean) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        triggerToast('Image too large (max 2MB)', 'error');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (isNew) {
+          setNewAdminForm({ ...newAdminForm, avatar: ev.target?.result as string });
+        } else {
+          setEditingAdminForm({ ...editingAdminForm, avatar: ev.target?.result as string });
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleAddAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newAdminForm.name || !newAdminForm.email) return;
-    await adminStore.addAdmin(newAdminForm);
-    triggerToast('New admin added');
-    setNewAdminForm({ ...newAdminForm, name: '', email: '' });
-    loadData();
+    try {
+      await adminStore.addAdmin(newAdminForm);
+      triggerToast('New admin added');
+      setNewAdminForm({ ...newAdminForm, name: '', email: '', password: '', avatar: '' });
+      loadData();
+    } catch (err: any) {
+      triggerToast(err.message || 'Failed to add admin', 'error');
+    }
   };
 
   const handleUpdateAdmin = async (id: string) => {
@@ -203,6 +233,17 @@ export default function AdminView() {
       await adminStore.deleteAdmin(id);
       triggerToast('Admin deleted');
       loadData();
+    }
+  };
+
+  const handleUpdateMyProfile = async () => {
+    if (!currentAdmin) return;
+    try {
+      await adminStore.updateAdmin(currentAdmin.id, { ...currentAdmin, avatar: profilePfpLink });
+      triggerToast('Profile updated successfully');
+      loadData();
+    } catch (err: any) {
+      triggerToast(err.message || 'Failed to update profile', 'error');
     }
   };
 
@@ -625,6 +666,31 @@ export default function AdminView() {
         {activeTab === 'admins' && (
           <div className="space-y-8 animate-fade-in" id="admin-management-tab">
             <h2 className="text-lg font-bold tracking-tight">Super Admin: Manage Access</h2>
+            
+            {currentAdmin && (
+              <div className="bg-white border border-neutral-200 rounded-xl p-6 shadow-sm">
+                <h3 className="text-sm font-bold mb-4 tracking-tight">My Profile Picture</h3>
+                <div className="flex items-center gap-4">
+                  <img src={currentAdmin.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120'} alt="My Profile" className="w-16 h-16 rounded-full object-cover border border-neutral-200" />
+                  <div className="flex-1 max-w-md flex gap-2">
+                    <input 
+                      type="url" 
+                      placeholder="Paste image URL here..." 
+                      value={profilePfpLink} 
+                      onChange={e => setProfilePfpLink(e.target.value)} 
+                      className="flex-1 px-3 py-2 text-sm bg-neutral-50 border border-neutral-200 rounded-lg outline-none focus:border-neutral-900" 
+                    />
+                    <button 
+                      onClick={handleUpdateMyProfile} 
+                      className="px-4 py-2 bg-neutral-900 text-white text-sm font-medium rounded-lg hover:bg-black transition-colors whitespace-nowrap"
+                    >
+                      Update
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Existing Admins List */}
               <div className="bg-white border border-neutral-200 rounded-xl p-6 shadow-sm">
@@ -637,6 +703,10 @@ export default function AdminView() {
                           <input required value={editingAdminForm.name} onChange={e=>setEditingAdminForm({...editingAdminForm, name: e.target.value})} placeholder="Name" className="w-full px-2 py-1 border border-neutral-200 rounded outline-none focus:border-neutral-900" />
                           <input required type="email" value={editingAdminForm.email} onChange={e=>setEditingAdminForm({...editingAdminForm, email: e.target.value})} placeholder="Email" className="w-full px-2 py-1 border border-neutral-200 rounded outline-none focus:border-neutral-900" />
                           <input required value={editingAdminForm.role} onChange={e=>setEditingAdminForm({...editingAdminForm, role: e.target.value})} placeholder="Role" className="w-full px-2 py-1 border border-neutral-200 rounded outline-none focus:border-neutral-900" />
+                          <div className="flex items-center gap-2">
+                            {editingAdminForm.avatar && <img src={editingAdminForm.avatar} className="w-8 h-8 rounded-full object-cover" alt="Avatar" />}
+                            <input type="file" accept="image/*" onChange={(e) => handleAvatarUpload(e, false)} className="flex-1 text-[10px] file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:bg-neutral-100 file:text-neutral-700 cursor-pointer" />
+                          </div>
                           <div className="flex gap-2">
                             <button onClick={() => handleUpdateAdmin(admin.id)} className="px-3 py-1 bg-neutral-900 text-white rounded text-xs">Save</button>
                             <button onClick={() => setEditingAdminId(null)} className="px-3 py-1 bg-neutral-200 text-neutral-800 rounded text-xs">Cancel</button>
@@ -663,22 +733,37 @@ export default function AdminView() {
               </div>
 
               {/* Add New Admin Form */}
-              <div className="bg-white border border-neutral-200 rounded-xl p-6 shadow-sm">
+              <div className="bg-white border border-neutral-200 rounded-xl p-6 shadow-sm flex flex-col h-full">
                 <h3 className="text-sm font-bold mb-4 tracking-tight">Provision New Administrator</h3>
-                <form onSubmit={handleAddAdmin} className="space-y-4 text-sm">
-                  <div>
-                    <label className="text-xs font-medium text-neutral-500 block mb-1">Full Name</label>
-                    <input required value={newAdminForm.name} onChange={e=>setNewAdminForm({...newAdminForm, name: e.target.value})} placeholder="Jane Doe" className="w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg outline-none focus:border-neutral-900" />
+                <form onSubmit={handleAddAdmin} className="space-y-4 text-sm flex-1 flex flex-col">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-medium text-neutral-500 block mb-1">Full Name</label>
+                      <input required value={newAdminForm.name} onChange={e=>setNewAdminForm({...newAdminForm, name: e.target.value})} placeholder="Jane Doe" className="w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg outline-none focus:border-neutral-900" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-neutral-500 block mb-1">Email Address</label>
+                      <input required type="email" value={newAdminForm.email} onChange={e=>setNewAdminForm({...newAdminForm, email: e.target.value})} placeholder="jane@example.com" className="w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg outline-none focus:border-neutral-900" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-medium text-neutral-500 block mb-1">Role Title</label>
+                      <input required value={newAdminForm.role} onChange={e=>setNewAdminForm({...newAdminForm, role: e.target.value})} placeholder="Content Editor" className="w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg outline-none focus:border-neutral-900" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-neutral-500 block mb-1">Initial Password <span className="text-[10px] text-neutral-400 font-normal">(Optional)</span></label>
+                      <input type="text" value={newAdminForm.password} onChange={e=>setNewAdminForm({...newAdminForm, password: e.target.value})} placeholder="Temporary password" className="w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg outline-none focus:border-neutral-900" />
+                    </div>
                   </div>
                   <div>
-                    <label className="text-xs font-medium text-neutral-500 block mb-1">Email Address</label>
-                    <input required type="email" value={newAdminForm.email} onChange={e=>setNewAdminForm({...newAdminForm, email: e.target.value})} placeholder="jane@example.com" className="w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg outline-none focus:border-neutral-900" />
+                    <label className="text-xs font-medium text-neutral-500 block mb-1">Profile Photo</label>
+                    <div className="flex items-center gap-3">
+                      {newAdminForm.avatar && <img src={newAdminForm.avatar} className="w-10 h-10 rounded-full object-cover border border-neutral-200" alt="Preview" />}
+                      <input type="file" accept="image/*" onChange={(e) => handleAvatarUpload(e, true)} className="flex-1 text-xs file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-neutral-100 file:text-neutral-700 hover:file:bg-neutral-200 cursor-pointer" />
+                    </div>
                   </div>
-                  <div>
-                    <label className="text-xs font-medium text-neutral-500 block mb-1">Role Title</label>
-                    <input required value={newAdminForm.role} onChange={e=>setNewAdminForm({...newAdminForm, role: e.target.value})} placeholder="Content Editor" className="w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg outline-none focus:border-neutral-900" />
-                  </div>
-                  <div className="pt-2 border-t border-neutral-100">
+                  <div className="pt-2 mt-auto border-t border-neutral-100">
                     <button type="submit" className="w-full flex items-center justify-center gap-2 bg-neutral-900 text-white font-medium py-2.5 rounded-lg hover:bg-black transition-colors">
                       <UserPlus size={16} /> Grant Admin Access
                     </button>

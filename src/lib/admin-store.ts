@@ -1,5 +1,6 @@
 import { Article } from '../types';
 import { supabase } from './supabase';
+import { createClient } from '@supabase/supabase-js';
 
 export interface FormSubmission {
   id: string;
@@ -44,13 +45,17 @@ export const adminStore = {
   },
   async login(email: string, password: string): Promise<{ success: boolean; error?: string }> {
     if (supabase) {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        return { success: false, error: error.message };
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          return { success: false, error: error.message };
+        }
+        return { success: true };
+      } catch (e: any) {
+        return { success: false, error: `Login failed: ${e.message}. Please check if VITE_SUPABASE_URL is valid.` };
       }
-      return { success: true };
     }
-    return { success: false, error: 'Database not connected' };
+    return { success: false, error: 'Database not connected. Please check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.' };
   },
   async logout(): Promise<void> {
     if (supabase) {
@@ -59,6 +64,15 @@ export const adminStore = {
   },
 
   // --- ADMIN USERS ---
+  async getCurrentAdmin() {
+    if (!supabase) return null;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user && user.email) {
+      const { data } = await supabase.from('admins').select('*').eq('email', user.email).single();
+      return data;
+    }
+    return null;
+  },
   async getAdmins() {
     if (cachedAdmins) return cachedAdmins;
     if (supabase) {
@@ -70,9 +84,26 @@ export const adminStore = {
     }
     return [];
   },
-  async addAdmin(admin: { name: string; email: string; role: string; avatar: string }) {
-    const newAdmin = { ...admin, id: `admin-${Date.now()}` };
+  async addAdmin(admin: { name: string; email: string; role: string; avatar: string; password?: string }) {
+    const newAdmin = { name: admin.name, email: admin.email, role: admin.role, avatar: admin.avatar, id: `admin-${Date.now()}` };
     if (supabase) {
+      if (admin.password) {
+        try {
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+          const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+          const secondarySupabase = createClient(supabaseUrl, supabaseAnonKey, { auth: { persistSession: false } });
+          const { error: signUpError } = await secondarySupabase.auth.signUp({
+            email: admin.email,
+            password: admin.password,
+          });
+          if (signUpError) {
+            console.error('Failed to create login credential:', signUpError.message);
+            throw new Error(signUpError.message);
+          }
+        } catch (e: any) {
+             throw new Error(e.message || 'Creation failed');
+        }
+      }
       await supabase.from('admins').insert([newAdmin]);
       cachedAdmins = null;
       return newAdmin;
