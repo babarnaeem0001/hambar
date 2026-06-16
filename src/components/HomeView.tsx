@@ -36,6 +36,28 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
   const [selectedPrinciple, setSelectedPrinciple] = React.useState<number | null>(null);
   const [activeMetric, setActiveMetric] = React.useState(0);
 
+  const [lightboxOpen, setLightboxOpen] = React.useState(false);
+  const [lightboxIndex, setLightboxIndex] = React.useState(0);
+  const [lightboxPlaying, setLightboxPlaying] = React.useState(false);
+
+  const chatGptImages = React.useMemo(() => [
+    "/ChatGPT Image Jun 16, 2026, 07_59_19 AM.png",
+    "/ChatGPT Image Jun 16, 2026, 07_59_30 AM.png",
+    "/ChatGPT Image Jun 16, 2026, 07_59_37 AM.png"
+  ], []);
+
+  React.useEffect(() => {
+    let playTimer: any = null;
+    if (lightboxOpen && lightboxPlaying) {
+      playTimer = setInterval(() => {
+        setLightboxIndex((prev) => (prev + 1) % chatGptImages.length);
+      }, 3500);
+    }
+    return () => {
+      if (playTimer) clearInterval(playTimer);
+    };
+  }, [lightboxOpen, lightboxPlaying, chatGptImages]);
+
   React.useEffect(() => {
     const timer = setInterval(() => {
       setSlideIndex((prev) => (prev + 1) % 3);
@@ -70,10 +92,10 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
   ];
 
   const trustElements = [
-    { title: 'Transparent Communication', desc: 'No complex technical jargon. Clear status reports, plain-English metrics, and open codebase repositories from day one.' },
-    { title: 'Business-Focused Solutions', desc: 'We prioritize investments that yield directly measurable return on investments (ROI), rather than adopting expensive tech defaults.' },
-    { title: 'Long-Term Support', desc: 'We stay with your business long after deployment to host, maintain, secure, and incrementally scale your databases.' },
-    { title: 'Strategic Planning', desc: 'We align raw technical blueprints precisely with your five-year corporate commercial growth and scaling targets.' }
+    { title: 'Transparent Communication', desc: 'No complex technical jargon. Clear status reports, plain-English metrics, and open codebase repositories from day one.', img: '/transparent communication.png' },
+    { title: 'Business-Focused Solutions', desc: 'We prioritize investments that yield directly measurable return on investments (ROI), rather than adopting expensive tech defaults.', img: '/business focused.png' },
+    { title: 'Long-Term Support', desc: 'We stay with your business long after deployment to host, maintain, secure, and incrementally scale your databases.', img: '/longterm support.png' },
+    { title: 'Strategic Planning', desc: 'We align raw technical blueprints precisely with your five-year corporate commercial growth and scaling targets.', img: '/strategic planning.png' }
   ];
 
   return (
@@ -93,7 +115,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                 <img 
                   src="/Copy of Copy of hambat (1).png" 
                   alt="Tech, AI & Softwares" 
-                  className="h-10 sm:h-14 lg:h-20 w-auto object-contain select-none pointer-events-none self-start -ml-1 sm:-ml-2 lg:-ml-3.5 -mt-7 sm:-mt-9 lg:-mt-12 -mb-2 sm:-mb-3 lg:-mb-4" 
+                  className="h-11 sm:h-16 lg:h-24 w-auto object-contain select-none pointer-events-none self-start ml-0 sm:-ml-0.5 lg:-ml-1 -mb-1 sm:-mb-2 lg:-mb-3" 
                   referrerPolicy="no-referrer"
                 />
                 <span className="text-xl sm:text-2xl lg:text-5xl font-bold text-neutral-300 flex items-center gap-2 flex-nowrap whitespace-nowrap pt-0 mt-0">
@@ -244,12 +266,6 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
            </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12 mt-10">
             {trustElements.map((el, idx) => {
-              const mockImages = [
-                "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=400",
-                "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=400",
-                "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=400",
-                "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=400"
-              ];
               return (
                 <div key={idx} className="flex items-center justify-center h-56 select-none">
                   <PinContainer title="Reveal Detail" href="#principles">
@@ -259,7 +275,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                      >
                        <div className="h-[7.5rem] w-full rounded-xl overflow-hidden relative">
                          <img 
-                           src={mockImages[idx % mockImages.length]} 
+                           src={el.img} 
                            alt={el.title} 
                            referrerPolicy="no-referrer"
                            className="w-full h-full object-cover rounded-xl duration-500 hover:scale-105" 
@@ -368,52 +384,70 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                 <CardItem translateZ="50" className="text-4xl lg:text-5xl font-extrabold text-black dark:text-white leading-tight mx-auto">
                   Why Growing Companies Partner with Us
                 </CardItem>
-                <CardItem translateZ="60" className="text-neutral-500 text-base max-w-sm mx-auto">
-                  We focus exclusively on practical outcomes instead of expensive generic tech defaults.
-                </CardItem>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full mt-10">
                 <CardItem translateZ="40" className="w-full">
-                  <div className="p-6 bg-black text-white rounded-2xl h-full space-y-4 shadow-xl">
-                    <div className="h-12 w-12 flex items-center justify-center bg-neutral-900 border border-neutral-800 rounded-lg">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-brand">
-                         <motion.path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1 }} />
-                         <motion.path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1 }} />
-                         <motion.path d="M4 22h16" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.5 }} />
-                         <motion.path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.2 }} />
-                         <motion.path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.2 }} />
-                         <motion.path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" fill="currentColor" initial={{ opacity: 0 }} whileInView={{ opacity: 0.2 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 1 }} />
-                      </svg>
+                  <div className="relative h-[380px] rounded-2xl overflow-hidden shadow-2xl flex flex-col justify-end p-8 group/item border border-white/5 select-none text-left">
+                    {/* Background Image */}
+                    <div 
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover/item:scale-105"
+                      style={{ backgroundImage: "url('/outcome first.png')" }}
+                    />
+                    {/* Premium Radial Dark Overlays to ensure great contrast and readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/75 to-black/20 transition-opacity duration-300 group-hover/item:opacity-90" />
+                    
+                    {/* Text Content elevated & styled */}
+                    <div className="relative z-10 transition-transform duration-300 group-hover/item:-translate-y-2">
+                      <h4 className="font-extrabold text-2xl text-white mb-3 group-hover/item:text-brand transition-colors tracking-tight">
+                        Outcome First Execution
+                      </h4>
+                      <p className="text-neutral-300 text-sm leading-relaxed">
+                        We measure success in hours saved, lead inquiry spikes, and secure database parameters.
+                      </p>
                     </div>
-                    <h4 className="font-bold text-lg text-white">Outcome First Execution</h4>
-                    <p className="text-neutral-300 text-sm leading-relaxed">We measure success in hours saved, lead inquiry spikes, and secure database parameters.</p>
                   </div>
                 </CardItem>
                 <CardItem translateZ="60" className="w-full">
-                  <div className="p-6 bg-black text-white rounded-2xl h-full space-y-4 shadow-xl">
-                    <div className="h-12 w-12 flex items-center justify-center bg-neutral-900 border border-neutral-800 rounded-lg">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-brand">
-                         <motion.path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.9 1.3 1.5 1.5 2.5" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1.5 }} />
-                         <motion.path d="M9 18h6" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.5 }} />
-                         <motion.path d="M10 22h4" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.7 }} />
-                         <motion.path d="M9 14h6" fill="currentColor" initial={{ opacity: 0 }} whileInView={{ opacity: 0.2 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 1 }} />
-                      </svg>
+                  <div className="relative h-[380px] rounded-2xl overflow-hidden shadow-2xl flex flex-col justify-end p-8 group/item border border-white/5 select-none text-left">
+                    {/* Background Image */}
+                    <div 
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover/item:scale-105"
+                      style={{ backgroundImage: "url('/deep technical.png')" }}
+                    />
+                    {/* Premium Overlays */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/75 to-black/20 transition-opacity duration-300 group-hover/item:opacity-90" />
+                    
+                    {/* Text Content elevated & styled */}
+                    <div className="relative z-10 transition-transform duration-300 group-hover/item:-translate-y-2">
+                      <h4 className="font-extrabold text-2xl text-white mb-3 group-hover/item:text-brand transition-colors tracking-tight">
+                        Deep Technical Competency
+                      </h4>
+                      <p className="text-neutral-300 text-sm leading-relaxed">
+                        Our teams perform actual code audits, implement sandboxed AI, and optimize cloud nodes.
+                      </p>
                     </div>
-                    <h4 className="font-bold text-lg text-white">Deep Technical Competency</h4>
-                    <p className="text-neutral-300 text-sm leading-relaxed">Our teams perform actual code audits, implement sandboxed AI, and optimize cloud nodes.</p>
                   </div>
                 </CardItem>
                 <CardItem translateZ="80" className="w-full">
-                  <div className="p-6 bg-black text-white rounded-2xl h-full space-y-4 shadow-xl">
-                    <div className="h-12 w-12 flex items-center justify-center bg-neutral-900 border border-neutral-800 rounded-lg">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-brand">
-                         <motion.path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1.2 }} />
-                         <motion.path d="M9 12l2 2 4-4" initial={{ pathLength: 0, opacity: 0 }} whileInView={{ pathLength: 1, opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 1.2 }} />
-                      </svg>
+                  <div className="relative h-[380px] rounded-2xl overflow-hidden shadow-2xl flex flex-col justify-end p-8 group/item border border-white/5 select-none text-left">
+                    {/* Background Image */}
+                    <div 
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover/item:scale-105"
+                      style={{ backgroundImage: "url('/client asset.png')" }}
+                    />
+                    {/* Premium Overlays */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/75 to-black/20 transition-opacity duration-300 group-hover/item:opacity-90" />
+                    
+                    {/* Text Content elevated & styled */}
+                    <div className="relative z-10 transition-transform duration-300 group-hover/item:-translate-y-2">
+                      <h4 className="font-extrabold text-2xl text-white mb-3 group-hover/item:text-brand transition-colors tracking-tight">
+                        Client & Asset Security
+                      </h4>
+                      <p className="text-neutral-300 text-sm leading-relaxed">
+                        We draft software components that protect client files from public model leakage.
+                      </p>
                     </div>
-                    <h4 className="font-bold text-lg text-white">Client & Asset Security</h4>
-                    <p className="text-neutral-300 text-sm leading-relaxed">We draft software components that protect client files from public model leakage.</p>
                   </div>
                 </CardItem>
               </div>
@@ -740,44 +774,118 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
       {/* 6. AI & Digital Transformation Section */}
       <section className="py-24 bg-white overflow-hidden" id="ai-transformation-about">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-12">
-          <div className="max-w-3xl mx-auto space-y-6">
+          <div className="max-w-3xl mx-auto space-y-4">
             <h2 className="text-4xl lg:text-5xl font-extrabold text-black tracking-tight leading-tight">
               AI Adoption & Modern Cloud Transition
             </h2>
-            <p className="text-neutral-600 text-lg leading-relaxed max-w-2xl mx-auto">
-              We build the bridges connecting legacy records with advanced generative models and cloud hosts.
+            <p className="text-neutral-500 text-sm md:text-base tracking-tight max-w-2xl mx-auto leading-normal">
+              Bridging legacy systems with advanced generative intelligence and secure cloud hosting.
             </p>
           </div>
 
-          <div className="py-12 flex justify-center">
-             <ImagesBadge 
-               text="View Documentation" 
-               href="#view"
-               images={[
-                 "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=400",
-                 "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=400",
-                 "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=400"
-               ]}
-               folderSize={{ width: 64, height: 48 }}
-               teaserImageSize={{ width: 40, height: 28 }}
-               hoverImageSize={{ width: 96, height: 64 }}
-               className="bg-neutral-100 hover:bg-neutral-200 py-3 px-6 rounded-full"
-             />
-          </div>
+          {/* Centered Folder Connection Diagram */}
+          <div className="relative w-full max-w-[680px] h-[300px] mx-auto flex items-center justify-center select-none bg-transparent mb-8">
+            
+            {/* SVG Connecting Lines and Dots */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+              {/* Top-Left Connection */}
+              <motion.line 
+                x1="28%" y1="28%" x2="43%" y2="44%" 
+                stroke="#000000" strokeWidth="1.2" strokeOpacity="0.35" 
+                initial={{ pathLength: 0 }}
+                whileInView={{ pathLength: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+              />
+              <circle cx="28%" cy="28%" r="3" fill="#000000" opacity="0.5" />
+              <circle cx="43%" cy="44%" r="1.5" fill="#000000" opacity="0.35" />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 pt-8 border-t border-neutral-100 text-left">
-            <div className="text-neutral-600 text-sm leading-relaxed">
-              <strong className="text-black font-extrabold">Customer Chatbots</strong> Deploy 24/7 web assistants that learn directly from your manuals and help files to address user requests instantly.
+              {/* Top-Right Connection */}
+              <motion.line 
+                x1="72%" y1="28%" x2="57%" y2="44%" 
+                stroke="#000000" strokeWidth="1.2" strokeOpacity="0.35" 
+                initial={{ pathLength: 0 }}
+                whileInView={{ pathLength: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+              />
+              <circle cx="72%" cy="28%" r="3" fill="#000000" opacity="0.5" />
+              <circle cx="57%" cy="44%" r="1.5" fill="#000000" opacity="0.35" />
+
+              {/* Bottom-Left Connection */}
+              <motion.line 
+                x1="28%" y1="72%" x2="43%" y2="56%" 
+                stroke="#000000" strokeWidth="1.2" strokeOpacity="0.35" 
+                initial={{ pathLength: 0 }}
+                whileInView={{ pathLength: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+              />
+              <circle cx="28%" cy="72%" r="3" fill="#000000" opacity="0.5" />
+              <circle cx="43%" cy="56%" r="1.5" fill="#000000" opacity="0.35" />
+
+              {/* Bottom-Right Connection */}
+              <motion.line 
+                x1="72%" y1="72%" x2="57%" y2="56%" 
+                stroke="#000000" strokeWidth="1.2" strokeOpacity="0.35" 
+                initial={{ pathLength: 0 }}
+                whileInView={{ pathLength: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+              />
+              <circle cx="72%" cy="72%" r="3" fill="#000000" opacity="0.5" />
+              <circle cx="57%" cy="56%" r="1.5" fill="#000000" opacity="0.35" />
+            </svg>
+
+            {/* Central Animated Folder (No box, no text, perfectly transparent background) */}
+            <div 
+              className="absolute z-10 cursor-pointer pointer-events-auto group/folder flex flex-col items-center"
+              onClick={() => {
+                setLightboxIndex(0);
+                setLightboxOpen(true);
+                setLightboxPlaying(true); // Start autoplay automatically on click for a delightful experience
+              }}
+              title="Click to play showcase"
+            >
+              <ImagesBadge 
+                text="" 
+                images={chatGptImages}
+                folderSize={{ width: 85, height: 62 }}
+                teaserImageSize={{ width: 52, height: 38 }}
+                hoverImageSize={{ width: 115, height: 80 }}
+                className="bg-transparent hover:bg-transparent p-0 border-0 shadow-none ring-0 pointer-events-auto cursor-pointer flex items-center justify-center transition-transform hover:scale-110 active:scale-95 duration-300"
+              />
             </div>
-            <div className="text-neutral-600 text-sm leading-relaxed">
-              <strong className="text-black font-extrabold">Workflow Automation</strong> Connect your CRM, email channels, and document inventory using smart, script-led webhooks.
+
+            {/* Surrounding 4 Points - Names Only */}
+            {/* Top-Left: Customer Chatbots */}
+            <div className="absolute left-[0%] md:left-[3%] top-[20%] text-left z-20">
+              <span className="text-black font-extrabold text-xs sm:text-sm md:text-base tracking-tight select-none">
+                Customer Chatbots
+              </span>
             </div>
-            <div className="text-neutral-600 text-sm leading-relaxed">
-              <strong className="text-black font-extrabold">Contextual Search</strong> Search thousands of unstructured local logs or contracts safely via semantic lookup interfaces.
+
+            {/* Top-Right: Workflow Automation */}
+            <div className="absolute right-[0%] md:right-[3%] top-[20%] text-right z-20">
+              <span className="text-black font-extrabold text-xs sm:text-sm md:text-base tracking-tight select-none">
+                Workflow Automation
+              </span>
             </div>
-            <div className="text-neutral-600 text-sm leading-relaxed">
-              <strong className="text-black font-extrabold">Executive Advisory</strong> Gain senior technology representation and code quality vetting on a flexible, part-time schedule.
+
+            {/* Bottom-Left: Contextual Search */}
+            <div className="absolute left-[0%] md:left-[3%] bottom-[20%] text-left z-20">
+              <span className="text-black font-extrabold text-xs sm:text-sm md:text-base tracking-tight select-none">
+                Contextual Search
+              </span>
             </div>
+
+            {/* Bottom-Right: Executive Advisory */}
+            <div className="absolute right-[0%] md:right-[3%] bottom-[20%] text-right z-20">
+              <span className="text-black font-extrabold text-xs sm:text-sm md:text-base tracking-tight select-none">
+                Executive Advisory
+              </span>
+            </div>
+
           </div>
         </div>
       </section>
@@ -791,20 +899,39 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
           </div>
 
           <Carousel3D items={[
-            { title: "Startups", desc: "Accelerating early-stage minimum viable products (MVPs) to satisfy strategic runway milestones.", svg: <><motion.path d="M12 2v20" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1 }} /><motion.path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.5 }} /></> },
-            { title: "E-Commerce", desc: "Tuning checkout performance and customer retention pipelines for web consumer retail.", svg: <><motion.circle cx="8" cy="21" r="1" initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 1 }} /><motion.circle cx="19" cy="21" r="1" initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 1.2 }} /><motion.path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1.5 }} /></> },
-            { title: "Small Businesses", desc: "Automating repetitive administrative spreadsheets to capture local buyer pipelines.", svg: <><motion.path d="M3 3v18h18" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1 }} /><motion.path d="M18 17V9" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.5 }} /><motion.path d="M13 17V5" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.7 }} /><motion.path d="M8 17v-3" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.9 }} /></> },
-            { title: "Healthcare Providers", desc: "Implementing secure scheduling pathways and compliant portals.", svg: <><motion.path d="M22 12h-4l-3 9L9 3l-3 9H2" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1.5 }} /></> },
-            { title: "SaaS Platforms", desc: "Refactoring codebases and implementing microservices for scalable platforms.", svg: <><motion.path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1.5 }} /></> }
+            { title: "Startups", desc: "Accelerating early-stage minimum viable products (MVPs) to satisfy strategic runway milestones.", img: "/startups.png" },
+            { title: "E-Commerce", desc: "Tuning checkout performance and customer retention pipelines for web consumer retail.", img: "/ecommerce.png" },
+            { title: "Small Businesses", desc: "Automating repetitive administrative spreadsheets to capture local buyer pipelines.", img: "/small business.png" },
+            { title: "Healthcare Providers", desc: "Implementing secure scheduling pathways and compliant portals.", img: "/healthcare providers.png" },
+            { title: "SaaS Platforms", desc: "Refactoring codebases and implementing microservices for scalable platforms.", img: "/saaas platforms.png" }
           ].map((ind, idx) => (
-             <div key={idx} className="p-10 bg-neutral-900 border border-neutral-800 rounded-3xl h-full flex flex-col justify-center text-center shadow-2xl hover:border-neutral-700 transition-colors group">
-               <div className="h-16 w-16 mx-auto mb-6 flex items-center justify-center bg-neutral-950 rounded-2xl group-hover:bg-brand group-hover:text-black text-neutral-400 transition-colors">
-                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                   {ind.svg}
-                 </svg>
+             <div 
+               key={idx} 
+               className="relative h-[420px] w-full rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 border border-neutral-800/25 group flex flex-col justify-center items-center p-10 select-none text-center"
+             >
+               {/* Background Image */}
+               <img 
+                 src={ind.img} 
+                 alt={ind.title}
+                 referrerPolicy="no-referrer"
+                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+               />
+               
+               {/* Premium Dark Overlay */}
+               <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/75 to-black/50 transition-opacity duration-300 group-hover:opacity-90" />
+               
+               {/* Accent Ring */}
+               <div className="absolute inset-0 border border-white/5 rounded-3xl pointer-events-none group-hover:border-brand/20 transition-colors duration-300" />
+
+               {/* Text Content */}
+               <div className="relative z-10 transition-transform duration-300 group-hover:translate-y-[-4px] flex flex-col items-center justify-center">
+                 <h3 className="font-extrabold text-4xl sm:text-5xl text-white mb-4 group-hover:text-brand transition-colors tracking-tight">
+                   {ind.title}
+                 </h3>
+                 <p className="text-neutral-300 text-sm sm:text-base leading-relaxed max-w-md mx-auto">
+                   {ind.desc}
+                 </p>
                </div>
-               <h3 className="font-extrabold text-3xl text-white mb-6 group-hover:text-brand transition-colors">{ind.title}</h3>
-               <p className="text-neutral-300 text-base leading-relaxed max-w-sm mx-auto">{ind.desc}</p>
              </div>
           ))} autoPlay={false} />
 
@@ -824,17 +951,14 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-8">
             <h2 className="text-3xl font-extrabold text-slate-950 tracking-tight mt-1">Our Structured 4-Step Process</h2>
-            <p className="text-slate-600 text-sm mt-2 leading-relaxed">
-              We guide companies from raw inquiry diagnostics to optimized deployment safety.
-            </p>
           </div>
 
           <Carousel items={processSteps.map((p, i) => {
              const mockImages = [
-               "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800",
-               "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=800",
-               "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=800",
-               "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=800"
+               "/1.png",
+               "/2.png",
+               "/3.png",
+               "/4.png"
              ];
              return (
               <Card 
@@ -1020,12 +1144,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
             >
               <div className="h-48 w-full relative">
                 <img 
-                  src={[
-                    "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=400",
-                    "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=400",
-                    "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=400",
-                    "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=400"
-                  ][selectedPrinciple]}
+                  src={trustElements[selectedPrinciple].img}
                   alt={trustElements[selectedPrinciple].title}
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover"
@@ -1040,21 +1159,169 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                   </svg>
                 </button>
               </div>
-              <div className="p-8 space-y-4">
-                <span className="text-[10px] font-mono bg-neutral-100 text-neutral-600 px-3 py-1 rounded-full font-bold uppercase tracking-wider block w-fit">Software Principle</span>
+              <div className="p-8 space-y-3">
                 <h3 className="text-2xl font-extrabold text-black font-sans tracking-tight">
                   {trustElements[selectedPrinciple].title}
                 </h3>
-                <p className="text-neutral-600 text-sm leading-relaxed font-sans mt-2">
+                <p className="text-neutral-600 text-sm leading-relaxed font-sans">
                   {trustElements[selectedPrinciple].desc}
                 </p>
-                <div className="pt-2">
-                  <button 
-                    onClick={() => setSelectedPrinciple(null)}
-                    className="w-full py-3 bg-neutral-950 hover:bg-neutral-900 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-neutral-950/10 cursor-pointer"
-                  >
-                    Close Details
-                  </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Interactive Playback Lightbox for AI Adoption Mockups */}
+      <AnimatePresence>
+        {lightboxOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {/* Backdrop with Blur */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setLightboxOpen(false)}
+              className="absolute inset-0 bg-neutral-950/90 backdrop-blur-xl cursor-zoom-out"
+            />
+
+            {/* Lightbox Container */}
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-5xl bg-neutral-900/60 rounded-[2rem] border border-neutral-800/80 p-6 md:p-8 flex flex-col items-center gap-6 z-10 overflow-hidden shadow-2xl backdrop-blur-md"
+            >
+              {/* Decorative radial background light */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-brand/5 blur-[120px] rounded-full pointer-events-none" />
+
+              {/* Top Bar (Title & Close Button) */}
+              <div className="relative w-full flex items-center justify-between pb-4 border-b border-neutral-800/60 z-10">
+                <div className="flex items-center gap-3">
+                  <div className="flex space-x-1.5 pl-1">
+                    <span className="w-3.5 h-3.5 rounded-full bg-red-500/80 block"></span>
+                    <span className="w-3.5 h-3.5 rounded-full bg-yellow-500/80 block"></span>
+                    <span className="w-3.5 h-3.5 rounded-full bg-green-500/80 block"></span>
+                  </div>
+                  <span className="text-xs md:text-sm font-mono tracking-wider text-neutral-400 uppercase font-bold">
+                    Interactive Showcase • Screenshot {lightboxIndex + 1} of {chatGptImages.length}
+                  </span>
+                </div>
+                
+                <button 
+                  onClick={() => setLightboxOpen(false)}
+                  className="bg-neutral-800/80 hover:bg-neutral-700/80 text-neutral-300 hover:text-white rounded-full p-2.5 transition-colors border border-neutral-700/60 cursor-pointer shadow-lg active:scale-90"
+                  aria-label="Close showcase"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Main Image View and Left/Right Arrows */}
+              <div className="relative w-full flex-[1] min-h-[300px] md:min-h-[460px] max-h-[60vh] flex items-center justify-center group z-10 select-none">
+                
+                {/* Left Arrow */}
+                <button
+                  onClick={() => {
+                    setLightboxIndex((prev) => (prev === 0 ? chatGptImages.length - 1 : prev - 1));
+                    setLightboxPlaying(false); // pause on manual interaction
+                  }}
+                  className="absolute left-2 md:left-4 z-20 bg-neutral-800/70 hover:bg-neutral-700 hover:text-white hover:border-neutral-600 text-neutral-300 rounded-full p-3 md:p-4 border border-neutral-700/50 transition-all shadow-xl active:scale-90 cursor-pointer backdrop-blur-md"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+
+                {/* Main Render Image */}
+                <div className="w-full h-full flex items-center justify-center p-2 rounded-2xl bg-neutral-950/45 border border-neutral-800/40 overflow-hidden">
+                  <AnimatePresence mode="wait">
+                    <motion.img
+                      key={lightboxIndex}
+                      src={chatGptImages[lightboxIndex]}
+                      alt={`ChatGPT Mockup ${lightboxIndex + 1}`}
+                      initial={{ opacity: 0, scale: 0.98, y: 4 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.98, y: -4 }}
+                      transition={{ duration: 0.25 }}
+                      className="max-w-full max-h-[55vh] object-contain rounded-xl shadow-2xl transition-all duration-300 pointer-events-none select-none"
+                    />
+                  </AnimatePresence>
+                </div>
+
+                {/* Right Arrow */}
+                <button
+                  onClick={() => {
+                    setLightboxIndex((prev) => (prev + 1) % chatGptImages.length);
+                    setLightboxPlaying(false); // pause on manual interaction
+                  }}
+                  className="absolute right-2 md:right-4 z-20 bg-neutral-800/70 hover:bg-neutral-700 hover:text-white hover:border-neutral-600 text-neutral-300 rounded-full p-3 md:p-4 border border-neutral-700/50 transition-all shadow-xl active:scale-90 cursor-pointer backdrop-blur-md"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Lower Controls & Autoplay Panel */}
+              <div className="relative w-full flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-neutral-800/60 z-10">
+                
+                {/* Autoplay Play/Pause */}
+                <button
+                  onClick={() => setLightboxPlaying(!lightboxPlaying)}
+                  className={`flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-bold tracking-wider uppercase transition-all border shadow-lg cursor-pointer ${
+                    lightboxPlaying 
+                      ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/25" 
+                      : "bg-neutral-800 hover:bg-neutral-700 text-neutral-200 border-neutral-700/60"
+                  }`}
+                >
+                  {lightboxPlaying ? (
+                    <>
+                      <span className="relative flex h-2.5 w-2.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                      </span>
+                      {/* Custom Pause Icon */}
+                      <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
+                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                      </svg>
+                      Playing Showcase
+                    </>
+                  ) : (
+                    <>
+                      {/* Play Icon */}
+                      <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                      Autoplay Showcase
+                    </>
+                  )}
+                </button>
+
+                {/* Navigation Indicator Stripes / Thumbnails */}
+                <div className="flex gap-2.5">
+                  {chatGptImages.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setLightboxIndex(idx);
+                        setLightboxPlaying(false);
+                      }}
+                      className={`h-2 rounded-full transition-all duration-300 shadow-md ${
+                        idx === lightboxIndex 
+                          ? "w-8 bg-brand" 
+                          : "w-2 bg-neutral-700 hover:bg-neutral-600"
+                      }`}
+                      aria-label={`Go to slide ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+
+                {/* Info Text */}
+                <div className="text-neutral-400 font-mono text-[10px] uppercase tracking-widest font-bold">
+                  AI Transformation Vision
                 </div>
               </div>
             </motion.div>
