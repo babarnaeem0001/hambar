@@ -1,0 +1,61 @@
+-- Run this script in your Supabase SQL Editor
+
+-- 1. Create articles table
+CREATE TABLE IF NOT EXISTS public.articles (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    slug TEXT NOT NULL,
+    category TEXT NOT NULL,
+    excerpt TEXT NOT NULL,
+    content TEXT NOT NULL,
+    author_name TEXT NOT NULL,
+    author_role TEXT NOT NULL,
+    author_avatar TEXT NOT NULL,
+    date TEXT NOT NULL,
+    read_time TEXT NOT NULL,
+    tags TEXT[] NOT NULL DEFAULT '{}',
+    status TEXT NOT NULL DEFAULT 'draft',
+    image_url TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 2. Create submissions table
+CREATE TABLE IF NOT EXISTS public.submissions (
+    id TEXT PRIMARY KEY,
+    type TEXT NOT NULL,
+    timestamp TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'new',
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT,
+    company_name TEXT,
+    service_interested TEXT,
+    budget_range TEXT,
+    details TEXT,
+    primary_service TEXT,
+    additional_services TEXT[],
+    nda_required TEXT,
+    website_url TEXT,
+    how_heard TEXT,
+    meeting_date TEXT,
+    meeting_time_slot TEXT,
+    uploaded_files_count INTEGER,
+    description TEXT,
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 3. Create admins table
+CREATE TABLE IF NOT EXISTS public.admins (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    role TEXT NOT NULL,
+    avatar TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Turn off RLS for public access (make sure to enable it later in production!)
+ALTER TABLE public.articles DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.submissions DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.admins DISABLE ROW LEVEL SECURITY;

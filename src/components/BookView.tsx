@@ -7,6 +7,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/stateful-button';
 import { serviceCategories } from '../data';
+import { adminStore } from '../lib/admin-store';
 
 interface FileUploadState {
   name: string;
@@ -421,6 +422,24 @@ export default function BookView({ initialServiceName, onClose, isModal }: BookV
     setSubmittingText('Sending...');
     await new Promise(resolve => setTimeout(resolve, 1400));
     
+    // Persist to adminStore
+    adminStore.addSubmission({
+      type: 'booking',
+      name: formData.name,
+      email: formData.email,
+      phone: `${formData.phoneCode} ${formData.phone}`,
+      companyName: formData.companyName || undefined,
+      description: formData.description,
+      ndaRequired: formData.ndaRequired,
+      websiteUrl: formData.websiteUrl || undefined,
+      howHeard: formData.howHeard,
+      primaryService: formData.primaryService,
+      additionalServices: formData.additionalServices,
+      meetingDate: formData.meetingDate || undefined,
+      meetingTimeSlot: formData.meetingTimeSlot || undefined,
+      uploadedFilesCount: uploadedFiles.length
+    });
+
     setSubmitting(false);
     setIsCompleted(true);
   };

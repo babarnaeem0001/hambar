@@ -9,6 +9,7 @@ import AboutView from './components/AboutView';
 import ContactView from './components/ContactView';
 import BookView from './components/BookView';
 import ServiceDetailView from './components/ServiceDetailView';
+import AdminView from './components/AdminView';
 import { ActivePage } from './types';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -21,15 +22,51 @@ export default function App() {
     serviceName: undefined,
   });
 
+  // Support navigating to and matching /admin and hash shifts
+  useEffect(() => {
+    const handleUrlRoute = () => {
+      const path = window.location.pathname;
+      const hash = window.location.hash;
+      if (path === '/admin' || hash === '#admin') {
+        setActivePage('admin');
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+    };
+
+    handleUrlRoute();
+    window.addEventListener('popstate', handleUrlRoute);
+    window.addEventListener('hashchange', handleUrlRoute);
+
+    return () => {
+      window.removeEventListener('popstate', handleUrlRoute);
+      window.removeEventListener('hashchange', handleUrlRoute);
+    };
+  }, []);
+
   // Smooth scroll to top on page variations
   const handlePageChange = (page: ActivePage, slug?: string) => {
     if (page === 'book') {
       // Go to dedicated page
       setBookingModal({ isOpen: false, serviceName: undefined });
       setActivePage('book');
+      if (window.location.pathname === '/admin' || window.location.hash === '#admin') {
+        window.history.pushState(null, '', '/');
+      }
       window.scrollTo({ top: 0, behavior: 'instant' });
       return;
     }
+    
+    // Sync browser URL bar state smoothly
+    if (page === 'admin') {
+      if (window.location.pathname !== '/admin') {
+        window.history.pushState(null, '', '/admin');
+      }
+    } else {
+      if (window.location.pathname === '/admin' || window.location.hash === '#admin') {
+        window.history.pushState(null, '', '/');
+      }
+    }
+
     setActivePage(page);
     if (slug) {
       setServiceSlug(slug);
@@ -59,6 +96,8 @@ export default function App() {
         return <ContactView />;
       case 'book':
         return <BookView initialServiceName={bookingModal.serviceName} onClose={() => setBookingModal({ isOpen: false })} isModal={false} />;
+      case 'admin':
+        return <AdminView />;
       case 'service-detail':
         return <ServiceDetailView slug={serviceSlug} onPageChange={handlePageChange} />;
       default:

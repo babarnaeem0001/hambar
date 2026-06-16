@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Article, ActivePage } from '../types';
-import { articles } from '../data';
 import { BackgroundBeams } from './ui/background-beams';
 import { 
   Search, BookOpen, Clock, ArrowRight, User, Calendar, 
   Share2, ArrowLeft, Mail, Check, MessageSquare, Linkedin, Twitter 
 } from 'lucide-react';
+import { adminStore } from '../lib/admin-store';
 
 interface MagazineViewProps {
   onPageChange: (page: ActivePage) => void;
@@ -13,6 +13,21 @@ interface MagazineViewProps {
 }
 
 export default function MagazineView({ onPageChange, onOpenBookingModal }: MagazineViewProps) {
+  const [articles, setArticles] = useState<Article[]>([]);
+
+  useEffect(() => {
+    const loadContent = async () => {
+      const list = await adminStore.getArticles();
+      setArticles(list);
+    };
+    loadContent();
+    const handleUpdate = () => { loadContent(); };
+    window.addEventListener('admin_articles_updated', handleUpdate);
+    return () => {
+      window.removeEventListener('admin_articles_updated', handleUpdate);
+    };
+  }, []);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [activeArticle, setActiveArticle] = useState<Article | null>(null);
@@ -87,6 +102,14 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
                 {activeArticle.title}
               </h1>
               
+              {activeArticle.imageUrl && (
+                <img 
+                  src={activeArticle.imageUrl} 
+                  alt={activeArticle.title} 
+                  className="w-full h-auto max-h-[500px] object-cover rounded-xl mt-6 shadow-sm"
+                />
+              )}
+
               {/* Author & Stats bar */}
               <div className="flex flex-wrap items-center justify-between gap-4 py-4 border-y border-slate-100 text-xs">
                 <div className="flex items-center gap-3">
@@ -154,9 +177,10 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
                   </div>
 
                   {/* Render content directly */}
-                  <div className="whitespace-pre-line text-xs font-sans mt-4 bg-slate-50 p-5 rounded border border-slate-100 font-mono text-slate-600">
-                    {activeArticle.content}
-                  </div>
+                  <div 
+                    className="prose prose-slate max-w-none font-sans mt-4 bg-white p-5 rounded border border-slate-100 text-slate-800 break-words w-full overflow-hidden"
+                    dangerouslySetInnerHTML={{ __html: activeArticle.content }}
+                  />
 
                   {/* Structured consultation CTA directly inside blog post */}
                   <div className="mt-8 p-6 bg-neutral-950 text-white rounded-lg space-y-4 text-center">
@@ -279,7 +303,18 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
                         className="p-6 bg-slate-50 border border-slate-100 rounded-lg hover:border-slate-300 transition-colors flex flex-col justify-between space-y-4"
                         id={`article-card-${art.id}`}
                       >
-                        <div className="space-y-2">
+                        <div className="space-y-4">
+                          {art.imageUrl && (
+                            <img 
+                              src={art.imageUrl} 
+                              alt={art.title} 
+                              className="w-full h-48 object-cover rounded-md cursor-pointer hover:opacity-90 transition-opacity" 
+                              onClick={() => {
+                                setActiveArticle(art);
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                              }}
+                            />
+                          )}
                           <div className="flex items-center gap-2 text-[10px] font-mono text-slate-500">
                             <span className="uppercase font-semibold text-slate-700 bg-slate-200/50 px-1.5 py-0.5 rounded">{art.category}</span>
                             <span>•</span>

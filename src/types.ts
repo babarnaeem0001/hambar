@@ -41,6 +41,8 @@ export interface Article {
   date: string;
   readTime: string;
   tags: string[];
+  status?: 'published' | 'draft';
+  imageUrl?: string;
 }
 
 export interface ProjectItem {
@@ -77,4 +79,5 @@ export type ActivePage =
   | 'contact'
   | 'book'
   | 'industries'
+  | 'admin'
   | 'service-detail'; // for major individual service pages

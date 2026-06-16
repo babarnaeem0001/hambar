@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MessageSquare, Send, CheckCircle2, AlertCircle } from 'lucide-react';
+import { adminStore } from '../lib/admin-store';
 
 export default function ContactView() {
   const [formData, setFormData] = useState({
@@ -45,6 +46,19 @@ export default function ContactView() {
       return;
     }
     setError('');
+    
+    // Persist to adminStore
+    adminStore.addSubmission({
+      type: 'contact',
+      name: formData.fullName,
+      email: formData.email,
+      phone: formData.phone || undefined,
+      companyName: formData.companyName || undefined,
+      serviceInterested: formData.serviceInterested,
+      budgetRange: formData.budgetRange,
+      details: formData.details
+    });
+
     setSubmitted(true);
   };
 

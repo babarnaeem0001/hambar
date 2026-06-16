@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ActivePage } from '../types';
 import { Menu, X, ChevronDown, BookOpen, Clock, ArrowRight } from 'lucide-react';
-import { serviceCategories, articles } from '../data';
+import { serviceCategories } from '../data';
+import { adminStore } from '../lib/admin-store';
 import SlideInButton from './ui/SlideInButton';
 
 interface HeaderProps {
@@ -11,6 +12,21 @@ interface HeaderProps {
 }
 
 export default function Header({ activePage, onPageChange, onOpenBookingModal }: HeaderProps) {
+  const [articles, setArticles] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadContent = async () => {
+      const list = await adminStore.getArticles();
+      setArticles(list);
+    };
+    loadContent();
+    const handleUpdate = () => { loadContent(); };
+    window.addEventListener('admin_articles_updated', handleUpdate);
+    return () => {
+      window.removeEventListener('admin_articles_updated', handleUpdate);
+    };
+  }, []);
+
   const [isOpen, setIsOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
 

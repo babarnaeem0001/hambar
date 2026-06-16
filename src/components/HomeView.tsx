@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ActivePage } from '../types';
 import { 
   ArrowRight, ShieldCheck, Zap, Users, Trophy, Lightbulb, 
   HelpCircle, ChevronDown, CheckCircle2, MessageSquare, BookOpen,
   Cpu, Code2, Compass, TrendingUp, Cloud
 } from 'lucide-react';
-import { processSteps, businessResults, serviceCategories, articles } from '../data';
+import { processSteps, businessResults, serviceCategories, articles as initialArticles } from '../data';
+import { adminStore } from '../lib/admin-store';
 import Globe3DDemo from './3d-globe-demo';
 import { PinContainer } from './ui/3d-pin';
 import { AnimatedTestimonials } from './ui/animated-testimonials';
@@ -31,6 +32,21 @@ interface HomeViewProps {
 }
 
 export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewProps) {
+  const [articles, setArticles] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadContent = async () => {
+      const list = await adminStore.getArticles();
+      setArticles(list);
+    };
+    loadContent();
+    const handleUpdate = () => { loadContent(); };
+    window.addEventListener('admin_articles_updated', handleUpdate);
+    return () => {
+      window.removeEventListener('admin_articles_updated', handleUpdate);
+    };
+  }, []);
+
   const [openFaq, setOpenFaq] = React.useState<number | null>(null);
   const [slideIndex, setSlideIndex] = React.useState(0);
   const [selectedPrinciple, setSelectedPrinciple] = React.useState<number | null>(null);
@@ -1003,6 +1019,9 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {articles.map((art) => (
               <div key={art.id} className="bg-black/60 backdrop-blur-md rounded-2xl border border-neutral-800/50 overflow-hidden flex flex-col justify-between hover:border-neutral-700 transition-colors z-20">
+                {art.imageUrl && (
+                  <img src={art.imageUrl} alt={art.title} className="w-full h-40 object-cover cursor-pointer hover:opacity-90 transition-opacity" onClick={() => onPageChange('magazine')} />
+                )}
                 <div className="p-6 space-y-4">
                   <div className="flex justify-between items-center text-[10px] font-mono text-neutral-400">
                     <span className="uppercase font-semibold text-brand bg-brand/10 px-2 py-1 rounded">{art.category}</span>
