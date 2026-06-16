@@ -33,11 +33,20 @@ interface HomeViewProps {
 export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewProps) {
   const [openFaq, setOpenFaq] = React.useState<number | null>(null);
   const [slideIndex, setSlideIndex] = React.useState(0);
+  const [selectedPrinciple, setSelectedPrinciple] = React.useState<number | null>(null);
+  const [activeMetric, setActiveMetric] = React.useState(0);
 
   React.useEffect(() => {
     const timer = setInterval(() => {
       setSlideIndex((prev) => (prev + 1) % 3);
     }, 10000);
+    return () => clearInterval(timer);
+  }, []);
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveMetric((prev) => (prev + 1) % 4);
+    }, 5500);
     return () => clearInterval(timer);
   }, []);
 
@@ -80,9 +89,14 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
           <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 relative z-20 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             
             <div className="space-y-6 pt-20 lg:pt-0">
-              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight text-white font-sans leading-[1.2] flex flex-col gap-3">
-                <span>Tech, AI & Softwares</span>
-                <span className="text-xl sm:text-2xl lg:text-5xl font-bold text-neutral-300 flex items-center gap-2 flex-nowrap whitespace-nowrap">
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight text-white font-sans leading-[1.1] flex flex-col gap-0 items-start select-none">
+                <img 
+                  src="/Copy of Copy of hambat (1).png" 
+                  alt="Tech, AI & Softwares" 
+                  className="h-10 sm:h-14 lg:h-20 w-auto object-contain select-none pointer-events-none self-start -ml-1 sm:-ml-2 lg:-ml-3.5 -mt-7 sm:-mt-9 lg:-mt-12 -mb-2 sm:-mb-3 lg:-mb-4" 
+                  referrerPolicy="no-referrer"
+                />
+                <span className="text-xl sm:text-2xl lg:text-5xl font-bold text-neutral-300 flex items-center gap-2 flex-nowrap whitespace-nowrap pt-0 mt-0">
                   for
                   <FlipWords
                     words={["Startups", "Growing Companies", "Established Businesses", "Enterprises"]}
@@ -145,7 +159,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                     name: "Mike Boyes",
                     role: "Head of Vendor, Haydock Finance",
                     image: "/mike_boyes.webp",
-                    showPlayButton: true
+                    showPlayButton: false
                   }
                 ].map((item, idx) => {
                   if (idx !== slideIndex) return null;
@@ -228,7 +242,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
            <div className="text-center mb-16">
              <h2 className="text-4xl font-extrabold tracking-tight text-black">Our Software Principles</h2>
            </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-20 mt-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12 mt-10">
             {trustElements.map((el, idx) => {
               const mockImages = [
                 "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=400",
@@ -237,24 +251,25 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                 "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=400"
               ];
               return (
-                <div key={idx} className="flex items-center justify-center h-64">
-                  <PinContainer title="View Details" href="#services">
-                     <div className="flex basis-full flex-col p-4 tracking-tight sm:basis-1/2 w-[16rem] h-[16rem] bg-white rounded-2xl border border-neutral-100 shadow-xl overflow-hidden justify-between">
-                       <div>
-                         <h3 className="max-w-xs !pb-2 !m-0 font-extrabold text-lg text-black">
-                           {el.title}
-                         </h3>
-                         <div className="text-xs !m-0 !p-0 font-normal leading-relaxed text-neutral-500">
-                           {el.desc}
-                         </div>
-                       </div>
-                       <div className="flex flex-1 w-full rounded-lg mt-4 overflow-hidden relative">
+                <div key={idx} className="flex items-center justify-center h-56 select-none">
+                  <PinContainer title="Reveal Detail" href="#principles">
+                     <div 
+                       onClick={() => setSelectedPrinciple(idx)}
+                       className="flex basis-full flex-col p-3 tracking-tight sm:basis-1/2 w-[16rem] h-[12.5rem] bg-white rounded-2xl border border-neutral-100 shadow-md overflow-hidden justify-between cursor-pointer hover:border-neutral-200 hover:shadow-lg transition-all"
+                     >
+                       <div className="h-[7.5rem] w-full rounded-xl overflow-hidden relative">
                          <img 
                            src={mockImages[idx % mockImages.length]} 
                            alt={el.title} 
                            referrerPolicy="no-referrer"
-                           className="w-full h-full object-cover rounded-lg" 
+                           className="w-full h-full object-cover rounded-xl duration-500 hover:scale-105" 
                          />
+                       </div>
+                       <div className="pt-2">
+                         <h3 className="text-sm font-extrabold text-black line-clamp-1">
+                           {el.title}
+                         </h3>
+                         <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider block mt-1">Click to view details</span>
                        </div>
                      </div>
                   </PinContainer>
@@ -408,44 +423,317 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
       </section>
 
       {/* 5. Business Results & Benefits (The Metric Section) */}
-      <section className="relative p-2 sm:p-4" id="business-results">
-        <div className="relative bg-neutral-950 text-white rounded-[2rem] overflow-hidden py-16 lg:py-24">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center max-w-2xl mx-auto mb-16">
-              <h2 className="text-3xl font-extrabold text-white tracking-tight mt-1">Measurable Business Benefits</h2>
-              <p className="text-slate-400 text-sm leading-relaxed mt-4">
-                Our growth strategies and automation routines yield objective, observable benefits.
-              </p>
+      <section className="relative py-24 bg-white" id="business-results">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-slate-950">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <h2 className="text-4xl font-extrabold text-neutral-900 tracking-tight">Measurable Business Benefits</h2>
+          </div>
+
+          {/* Actual Stats Panel arranged as a premium 3-column display aligning title left, Apple Watch center, and points right */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center max-w-5xl mx-auto py-10">
+            
+            {/* COLUMN 1: Concisely styled title + raw value metric on the LEFT of the Watch */}
+            <div className="lg:col-span-3 text-center lg:text-right space-y-4 lg:-translate-x-12 h-full flex flex-col justify-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`left-stat-title-${activeMetric}`}
+                  initial={{ opacity: 0, x: -15 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 15 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="space-y-4"
+                >
+                  <div className="text-6xl sm:text-7xl font-sans font-black tracking-tight text-black leading-none">
+                    {businessResults[activeMetric].metric}
+                  </div>
+                  <h3 className="text-2xl font-black text-black tracking-tight leading-snug">
+                    {businessResults[activeMetric].title}
+                  </h3>
+                </motion.div>
+              </AnimatePresence>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {businessResults.map((res, i) => {
-              const svgPaths = [
-                // Icon 1 (Trending Up)
-                <><motion.path d="M3 3v18h18" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1 }} /><motion.path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" initial={{ pathLength: 0, opacity: 0 }} whileInView={{ pathLength: 1, opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.5 }} /></>,
-                // Icon 2 (Server/Database)
-                <><motion.path d="M4 6a16 16 0 0116 0M4 12a16 16 0 0116 0M4 18a16 16 0 0116 0" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1.5 }} /><motion.rect x="4" y="4" width="16" height="4" rx="2" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.8 }} /><motion.rect x="4" y="10" width="16" height="4" rx="2" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 1 }} /><motion.rect x="4" y="16" width="16" height="4" rx="2" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 1.2 }} /></>,
-                // Icon 3 (Shield Check)
-                <><motion.path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1.2 }} /><motion.path d="M9 12l2 2 4-4" initial={{ pathLength: 0, opacity: 0 }} whileInView={{ pathLength: 1, opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 1.2 }} /></>,
-                // Icon 4 (Zap/Lightning)
-                <><motion.path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1 }} /><motion.path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="currentColor" initial={{ opacity: 0 }} whileInView={{ opacity: 0.2 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 1 }} /></>
-              ];
+            {/* COLUMN 2: Highly Realistic Apple Watch Model Centered */}
+            <div className="lg:col-span-6 flex items-center justify-center py-16 relative">
+              <div className="flex items-center justify-center select-none w-full relative h-[450px] max-w-xs mx-auto">
 
-              return (
-                <div key={i} className="group p-8 bg-black/50 rounded-2xl border border-slate-800 text-center space-y-4 hover:bg-slate-900 transition-colors">
-                  <div className="flex justify-center h-16 w-16 mx-auto items-center">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-brand">
-                       {svgPaths[i % svgPaths.length]}
-                    </svg>
+                {/* Central Watch Case with nested straps */}
+                <div className="relative z-10 flex items-center justify-center">
+                  
+                  <div className="relative w-[210px] h-[245px]">
+                    {/* Pastel Sage-Mint Matte Vertical Strap (Top) integrated beneath casing */}
+                    <div className="absolute bottom-[232px] left-1/2 -translate-x-1/2 w-[102px] h-[135px] bg-gradient-to-b from-[#e3f4ee] via-[#daf1e7] to-[#cbdcd3] rounded-t-[2.5rem] shadow-[inset_0_-14px_20px_rgba(0,0,0,0.06),inset_0_4px_6px_rgba(255,255,255,0.85)] border-x border-t border-black/5 z-0" />
+                    
+                    {/* Pastel Sage-Mint Matte Vertical Strap (Bottom) integrated beneath casing */}
+                    <div className="absolute top-[232px] left-1/2 -translate-x-1/2 w-[102px] h-[135px] bg-gradient-to-t from-[#e3f4ee] via-[#daf1e7] to-[#cbdcd3] rounded-b-[2.5rem] shadow-[inset_0_14px_20px_rgba(0,0,0,0.06),inset_0_-4px_6px_rgba(255,255,255,0.85)] border-x border-b border-black/5 z-0 flex flex-col items-center justify-start pt-8">
+                      {/* Tactile adjustment holes */}
+                      <div className="flex flex-col gap-3.5 items-center opacity-85">
+                        <div className="w-2.5 h-2.5 rounded-full bg-black/15 shadow-[inset_0_1.5px_3.0px_rgba(0,0,0,0.35),0_1px_1px_rgba(255,255,255,0.6)]" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-black/15 shadow-[inset_0_1.5px_3.0px_rgba(0,0,0,0.35),0_1px_1px_rgba(255,255,255,0.6)]" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-black/15 shadow-[inset_0_1.5px_3.0px_rgba(0,0,0,0.35),0_1px_1px_rgba(255,255,255,0.6)]" />
+                      </div>
+                    </div>
+
+                    {/* Outer layer is polished metal casing frame - curved squircle, overlays above straps */}
+                    <div className="relative w-full h-full z-10 rounded-[3.8rem] bg-gradient-to-tr from-neutral-400 via-neutral-100 to-neutral-400 p-[6.5px] shadow-[0_45px_100px_-20px_rgba(0,0,0,0.7),0_15px_30px_-5px_rgba(0,0,0,0.5),inset_0_2px_4px_rgba(255,255,255,0.85),inset_0_-2px_4px_rgba(0,0,0,0.4)] border border-neutral-300 flex items-center justify-center">
+                      
+                      {/* Inner crystal display bezel perimeter */}
+                      <div className="w-full h-full rounded-[3.45rem] bg-black p-[2px] flex items-center justify-center relative shadow-lg">
+                        
+                        {/* Inner screen glass surface */}
+                        <div className="w-full h-full rounded-[3.35rem] bg-[#020202] p-[5px] relative overflow-hidden flex flex-col justify-between border border-neutral-950 shadow-inner">
+                          
+                          {/* 2.5D Curved Glass Screen Reflection Overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.04] to-white/[0.12] pointer-events-none rounded-[3.35rem] z-30" />
+                          <div className="absolute top-0 inset-x-8 h-2.5 bg-gradient-to-b from-white/[0.18] to-transparent rounded-full filter blur-[1px] pointer-events-none z-30" />
+
+                          {/* Interactive Watch Corner Complication Buttons - neutral dark tone with absolutely NO colorful backgrounds or states */}
+                          {/* Top Left Complication */}
+                          <button 
+                            onClick={() => setActiveMetric(0)} 
+                            className={`absolute top-[14px] left-[14px] w-[32px] h-[32px] rounded-full flex items-center justify-center transition-all z-20 shadow-md ${
+                              activeMetric === 0 
+                                ? 'bg-[#1c1c1e] border border-white/35 scale-105 shadow-[0_0_8px_rgba(255,255,255,0.15)]' 
+                                : 'bg-[#141415]/90 border border-white/15 hover:border-white/30'
+                            }`}
+                            title="Tasks KPI Indicator"
+                          >
+                            <div className="flex items-end gap-[1.5px] h-3">
+                              <div className="w-[1.5px] rounded-full transition-all h-1.5 bg-white/90" />
+                              <div className="w-[1.5px] rounded-full transition-all h-3 bg-white/90" />
+                              <div className="w-[1.5px] rounded-full transition-all h-2 bg-white/90" />
+                              <div className="w-[1.5px] rounded-full transition-all h-2.5 bg-white/90" />
+                              <div className="w-[1.5px] rounded-full transition-all h-1 bg-white/90" />
+                            </div>
+                          </button>
+
+                          {/* Top Right Complication */}
+                          <button 
+                            onClick={() => setActiveMetric(1)} 
+                            className={`absolute top-[14px] right-[14px] w-[32px] h-[32px] rounded-full flex items-center justify-center transition-all z-20 shadow-md ${
+                              activeMetric === 1 
+                                ? 'bg-[#1c1c1e] border border-white/35 scale-105 shadow-[0_0_8px_rgba(255,255,255,0.15)]' 
+                                : 'bg-[#141415]/90 border border-white/15 hover:border-white/30'
+                            }`}
+                            title="Support KPI Indicator"
+                          >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" className="text-white">
+                              <path d="M4 17l4-4 4 2 8-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                              <circle cx="20" cy="7" r="2.5" fill="currentColor" />
+                            </svg>
+                          </button>
+
+                          {/* Bottom Left Complication */}
+                          <button 
+                            onClick={() => setActiveMetric(2)} 
+                            className={`absolute bottom-[14px] left-[14px] w-[32px] h-[32px] rounded-full flex items-center justify-center transition-all z-20 shadow-md ${
+                              activeMetric === 2 
+                                ? 'bg-[#1c1c1e] border border-white/35 scale-105 shadow-[0_0_8px_rgba(255,255,255,0.15)]' 
+                                : 'bg-[#141415]/90 border border-white/15 hover:border-white/30'
+                            }`}
+                            title="ROI KPI Indicator"
+                          >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+                              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                              <circle cx="9" cy="7" r="3.5" />
+                              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                            </svg>
+                          </button>
+
+                          {/* Bottom Right Complication */}
+                          <button 
+                            onClick={() => setActiveMetric(3)} 
+                            className={`absolute bottom-[14px] right-[14px] w-[32px] h-[32px] rounded-full flex items-center justify-center transition-all z-20 shadow-md ${
+                              activeMetric === 3 
+                                ? 'bg-[#1c1c1e] border border-white/35 scale-105 shadow-[0_0_8px_rgba(255,255,255,0.15)]' 
+                                : 'bg-[#141415]/90 border border-white/15 hover:border-white/30'
+                            }`}
+                            title="Downtime KPI Indicator"
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+                              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                              <path d="M2 17l10 5 10-5" />
+                              <path d="M12 22V12" />
+                            </svg>
+                          </button>
+
+                          {/* Watch Top Center Time - Beautifully thinner font */}
+                          <div className="relative z-10 flex justify-center pt-2 select-none pointer-events-none">
+                            <span className="font-sans text-[10px] font-medium tracking-widest text-[#f5f5f7]/90">10:09</span>
+                          </div>
+
+                          {/* Watch Center Core Rings area - Circles fit the screen beautifully with bold, thick circles and clear non-colliding gaps */}
+                          <div className="relative z-10 flex-1 flex flex-col items-center justify-center py-2">
+                            
+                            <div className="relative w-[155px] h-[155px] flex items-center justify-center">
+                              
+                              <svg className="w-full h-full transform -rotate-90 scale-[1.14]" viewBox="0 0 100 100">
+
+                                {/* Outer Vibrant Pink/Red Ring - Bolder and Thicker stroke */}
+                                <circle cx="50" cy="50" r="43" strokeWidth="11" stroke="#ef4444" strokeOpacity="0.15" fill="none" />
+                                <motion.circle 
+                                  cx="50" cy="50" r="43" 
+                                  strokeWidth="11" 
+                                  stroke="#ef4444" 
+                                  strokeDasharray="270.18"
+                                  animate={{ strokeDashoffset: 270.18 - (270.18 * [0.85, 0.45, 0.70, 0.35][activeMetric]) }}
+                                  transition={{ type: "spring", stiffness: 60, damping: 13 }}
+                                  strokeLinecap="round" 
+                                  fill="none" 
+                                />
+                                
+                                {/* Middle Neon Lime-Green Ring - Bolder and Thicker stroke */}
+                                <circle cx="50" cy="50" r="31" strokeWidth="11" stroke="#a1ff00" strokeOpacity="0.15" fill="none" />
+                                <motion.circle 
+                                  cx="50" cy="50" r="31" 
+                                  strokeWidth="11" 
+                                  stroke="#a1ff00" 
+                                  strokeDasharray="194.78"
+                                  animate={{ strokeDashoffset: 194.78 - (194.78 * [0.45, 0.90, 0.60, 0.40][activeMetric]) }}
+                                  transition={{ type: "spring", stiffness: 60, damping: 13 }}
+                                  strokeLinecap="round" 
+                                  fill="none" 
+                                />
+
+                                {/* Inner Electric Cyan Ring - Bolder and Thicker stroke */}
+                                <circle cx="50" cy="50" r="19" strokeWidth="11" stroke="#00f0ff" strokeOpacity="0.15" fill="none" />
+                                <motion.circle 
+                                  cx="50" cy="50" r="19" 
+                                  strokeWidth="11" 
+                                  stroke="#00f0ff" 
+                                  strokeDasharray="119.38"
+                                  animate={{ strokeDashoffset: 119.38 - (119.38 * [0.70, 0.35, 0.85, 0.95][activeMetric]) }}
+                                  transition={{ type: "spring", stiffness: 60, damping: 13 }}
+                                  strokeLinecap="round" 
+                                  fill="none" 
+                                />
+
+                                {/* 12-o-clock Arrow Glyphs matching concentric radii perfectly */}
+                                <g transform="translate(50, 7)">
+                                  <circle r="4" fill="#ef4444" />
+                                  <path d="M-1 0 h2 M0 -1 l1 1l-1 1" stroke="white" strokeWidth="0.85" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                </g>
+                                <g transform="translate(50, 19)">
+                                  <circle r="4" fill="#a1ff00" />
+                                  <path d="M-1.2 -1 L0 0 L-1.2 1 M0.4 -1 L1.6 0 L0.4 1" stroke="black" strokeWidth="0.95" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                </g>
+                                <g transform="translate(50, 31)">
+                                  <circle r="4" fill="#00f0ff" />
+                                  <path d="M0 1.2 v-2.4 M-1 -0.2 L0 -1.2 L1 -0.2" stroke="black" strokeWidth="0.95" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                </g>
+                              </svg>
+
+                            </div>
+                          </div>
+
+                        </div>
+
+                      </div>
+                    </div>
+
+                    {/* Highly-integrated physical digital crown pushed a bit right to look completely natural */}
+                    <button
+                      onClick={() => setActiveMetric((prev) => (prev + 1) % 4)}
+                      className="absolute left-[208.5px] top-[24%] w-[12px] h-[46px] bg-gradient-to-b from-neutral-600 via-neutral-100 to-[#1e1e1f] rounded-r-[5.5px] shadow-[3px_1px_5px_rgba(0,0,0,0.45)] border border-neutral-400 border-l-0 flex flex-col justify-between py-1.5 items-center cursor-pointer select-none active:scale-95 duration-75 z-20"
+                      title="Click crown to cycle stats"
+                    >
+                      <div className="w-[8px] h-[1px] bg-neutral-900 opacity-65" />
+                      <div className="w-[8px] h-[1px] bg-neutral-900 opacity-65" />
+                      <div className="w-[8px] h-[1px] bg-neutral-900 opacity-65" />
+                      <div className="w-[8px] h-[1px] bg-neutral-900 opacity-65" />
+                      <div className="w-[8px] h-[1px] bg-neutral-900 opacity-65" />
+                      <div className="w-[8px] h-[1px] bg-neutral-900 opacity-65" />
+                    </button>
+
                   </div>
-                  <div className="text-4xl font-extrabold text-white font-mono">{res.metric}</div>
-                  <h3 className="font-bold text-sm text-white">{res.title}</h3>
-                  <p className="text-slate-400 text-xs leading-relaxed">{res.subtitle}</p>
+
                 </div>
-              );
-            })}
+
+              </div>
+            </div>
+
+            {/* COLUMN 3: Concise 2-3 bullet description points on the RIGHT of the Watch (one-line long each, smaller and placed closer to the watch frame) */}
+            <div className="lg:col-span-3 text-left space-y-4 pl-6 lg:pl-4 lg:translate-x-0 h-full flex flex-col justify-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`right-stat-desc-${activeMetric}`}
+                  initial={{ opacity: 0, x: 15 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -15 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="min-h-[120px] flex flex-col justify-center"
+                >
+                  <div className="space-y-4 font-sans text-neutral-800 text-xs font-normal leading-relaxed">
+                    {activeMetric === 0 && (
+                      <ul className="space-y-3.5 list-none">
+                        <li className="flex items-start gap-2.5">
+                          <span className="text-black text-xs leading-none mt-1">•</span>
+                          <span>Migrates manual spreadsheet workflows into continuous cloud processes.</span>
+                        </li>
+                        <li className="flex items-start gap-2.5">
+                          <span className="text-black text-xs leading-none mt-1">•</span>
+                          <span>Configures automated background timer runs with no human logging.</span>
+                        </li>
+                        <li className="flex items-start gap-2.5">
+                          <span className="text-black text-xs leading-none mt-1">•</span>
+                          <span>Replaces tedious key calculations with reliable scheduled code engines.</span>
+                        </li>
+                      </ul>
+                    )}
+                    {activeMetric === 1 && (
+                      <ul className="space-y-3.5 list-none">
+                        <li className="flex items-start gap-2.5">
+                          <span className="text-black text-xs leading-none mt-1">•</span>
+                          <span>Launches 24/7 web assistants fully trained on specialized manuals.</span>
+                        </li>
+                        <li className="flex items-start gap-2.5">
+                          <span className="text-black text-xs leading-none mt-1">•</span>
+                          <span>Triage general support queries instantly without human intervention.</span>
+                        </li>
+                        <li className="flex items-start gap-2.5">
+                          <span className="text-black text-xs leading-none mt-1">•</span>
+                          <span>Routes complex edge tasks seamlessly to executives with transcripts.</span>
+                        </li>
+                      </ul>
+                    )}
+                    {activeMetric === 2 && (
+                      <ul className="space-y-3.5 list-none">
+                        <li className="flex items-start gap-2.5">
+                          <span className="text-black text-xs leading-none mt-1">•</span>
+                          <span>Funnels web inbound traffic onto custom-built landing portals.</span>
+                        </li>
+                        <li className="flex items-start gap-2.5">
+                          <span className="text-black text-xs leading-none mt-1">•</span>
+                          <span>Captures highly specific long-tail buyer search intent campaigns.</span>
+                        </li>
+                        <li className="flex items-start gap-2.5">
+                          <span className="text-black text-xs leading-none mt-1">•</span>
+                          <span>Tracks clear numeric sales conversion metrics to optimize budgets.</span>
+                        </li>
+                      </ul>
+                    )}
+                    {activeMetric === 3 && (
+                      <ul className="space-y-3.5 list-none">
+                        <li className="flex items-start gap-2.5">
+                          <span className="text-black text-xs leading-none mt-1">•</span>
+                          <span>Distributes raw server traffic balances across multiple regions.</span>
+                        </li>
+                        <li className="flex items-start gap-2.5">
+                          <span className="text-black text-xs leading-none mt-1">•</span>
+                          <span>Prepares offsite virtual machine disk snapshots automatically.</span>
+                        </li>
+                        <li className="flex items-start gap-2.5">
+                          <span className="text-black text-xs leading-none mt-1">•</span>
+                          <span>Flares dynamic paging sirens immediately if anomalies arise.</span>
+                        </li>
+                      </ul>
+                    )}
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
           </div>
-         </div>
         </div>
       </section>
 
@@ -453,12 +741,11 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
       <section className="py-24 bg-white overflow-hidden" id="ai-transformation-about">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-12">
           <div className="max-w-3xl mx-auto space-y-6">
-            <span className="text-xs font-mono bg-neutral-100 text-neutral-700 px-3 py-1 rounded-full font-bold uppercase tracking-wider">Modernization Path</span>
             <h2 className="text-4xl lg:text-5xl font-extrabold text-black tracking-tight leading-tight">
               AI Adoption & Modern Cloud Transition
             </h2>
             <p className="text-neutral-600 text-lg leading-relaxed max-w-2xl mx-auto">
-              Many growing companies are weighed down by slow databases, legacy servers, or manual email checklists. We build the bridges connecting legacy records with advanced generative models and cloud hosts.
+              We build the bridges connecting legacy records with advanced generative models and cloud hosts.
             </p>
           </div>
 
@@ -478,22 +765,18 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
              />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pt-8 border-t border-neutral-100">
-            <div className="space-y-3">
-              <h4 className="font-bold text-black text-lg">Customer Chatbots</h4>
-              <p className="text-neutral-600 text-sm leading-relaxed">Deploy 24/7 web assistants that learn directly from your manuals and help files to address user requests instantly.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 pt-8 border-t border-neutral-100 text-left">
+            <div className="text-neutral-600 text-sm leading-relaxed">
+              <strong className="text-black font-extrabold">Customer Chatbots</strong> Deploy 24/7 web assistants that learn directly from your manuals and help files to address user requests instantly.
             </div>
-            <div className="space-y-3">
-              <h4 className="font-bold text-black text-lg">Workflow Automation</h4>
-              <p className="text-neutral-600 text-sm leading-relaxed">Connect your CRM, email channels, and document inventory using smart, script-led webhooks.</p>
+            <div className="text-neutral-600 text-sm leading-relaxed">
+              <strong className="text-black font-extrabold">Workflow Automation</strong> Connect your CRM, email channels, and document inventory using smart, script-led webhooks.
             </div>
-            <div className="space-y-3">
-              <h4 className="font-bold text-black text-lg">Contextual Search</h4>
-              <p className="text-neutral-600 text-sm leading-relaxed">Search thousands of unstructured local logs or contracts safely via semantic lookup interfaces.</p>
+            <div className="text-neutral-600 text-sm leading-relaxed">
+              <strong className="text-black font-extrabold">Contextual Search</strong> Search thousands of unstructured local logs or contracts safely via semantic lookup interfaces.
             </div>
-            <div className="space-y-3">
-              <h4 className="font-bold text-black text-lg">Executive Advisory</h4>
-              <p className="text-neutral-600 text-sm leading-relaxed">Gain senior technology representation and code quality vetting on a flexible, part-time schedule.</p>
+            <div className="text-neutral-600 text-sm leading-relaxed">
+              <strong className="text-black font-extrabold">Executive Advisory</strong> Gain senior technology representation and code quality vetting on a flexible, part-time schedule.
             </div>
           </div>
         </div>
@@ -714,6 +997,71 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
           </div>
         </div>
       </section>
+
+      {/* Principle Detail Modal */}
+      <AnimatePresence>
+        {selectedPrinciple !== null && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.4 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedPrinciple(null)}
+              className="absolute inset-0 bg-black backdrop-blur-sm shadow-xl"
+            />
+            
+            {/* Modal Body */}
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-[2rem] w-full max-w-md overflow-hidden shadow-2xl relative border border-neutral-150 z-10"
+            >
+              <div className="h-48 w-full relative">
+                <img 
+                  src={[
+                    "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=400",
+                    "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=400",
+                    "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=400",
+                    "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=400"
+                  ][selectedPrinciple]}
+                  alt={trustElements[selectedPrinciple].title}
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full object-cover"
+                />
+                <button 
+                  onClick={() => setSelectedPrinciple(null)}
+                  className="absolute top-4 right-4 bg-black/60 hover:bg-black/80 text-white rounded-full p-2 backdrop-blur-md transition-colors border border-white/10 cursor-pointer"
+                  aria-label="Close modal"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="p-8 space-y-4">
+                <span className="text-[10px] font-mono bg-neutral-100 text-neutral-600 px-3 py-1 rounded-full font-bold uppercase tracking-wider block w-fit">Software Principle</span>
+                <h3 className="text-2xl font-extrabold text-black font-sans tracking-tight">
+                  {trustElements[selectedPrinciple].title}
+                </h3>
+                <p className="text-neutral-600 text-sm leading-relaxed font-sans mt-2">
+                  {trustElements[selectedPrinciple].desc}
+                </p>
+                <div className="pt-2">
+                  <button 
+                    onClick={() => setSelectedPrinciple(null)}
+                    className="w-full py-3 bg-neutral-950 hover:bg-neutral-900 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-neutral-950/10 cursor-pointer"
+                  >
+                    Close Details
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }

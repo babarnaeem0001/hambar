@@ -49,10 +49,13 @@ export default function ServicesView({ onPageChange, initialServiceId, onOpenBoo
   }, [searchQuery]);
 
   const getActiveCategoryIndex = () => {
-    let index = filteredCategories.findIndex(c => `category-block-${c.id}` === activeSection);
+    if (activeSection === 'services-hero') {
+      return -1;
+    }
     if (activeSection === 'services-contact-redirect') {
       return filteredCategories.length - 1;
     }
+    const index = filteredCategories.findIndex(c => `category-block-${c.id}` === activeSection);
     return index < 0 ? 0 : index;
   };
 
@@ -60,34 +63,78 @@ export default function ServicesView({ onPageChange, initialServiceId, onOpenBoo
 
   const categoryIdsString = filteredCategories.map(c => c.id).join(',');
 
-  // Scroll active section tracker with IntersectionObserver
+  // Scroll active section tracker with highly accurate viewport offset tracking
   React.useEffect(() => {
-    const sectionIds = ['services-hero', ...filteredCategories.map(cat => `category-block-${cat.id}`), 'services-contact-redirect'];
-    const observers = sectionIds.map(id => {
-      const el = document.getElementById(id);
-      if (!el) return null;
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const viewportHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
 
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setActiveSection(id);
+      // targetPoint is the visual focus line in the viewport (25% from top of screen)
+      const targetPoint = viewportHeight * 0.25;
+
+      // 1. If we are near the very top of the page, highlight the hero
+      if (scrollY <= 60) {
+        setActiveSection('services-hero');
+        return;
+      }
+
+      // 2. If we are near the bottom of the page, highlight the redirect block
+      if (scrollY + viewportHeight >= documentHeight - 80) {
+        setActiveSection('services-contact-redirect');
+        return;
+      }
+
+      // 3. Otherwise, check each category block.
+      // Find the category block that is currently crossing/occupying our targetPoint line.
+      let activeId = '';
+
+      for (const cat of filteredCategories) {
+        const id = `category-block-${cat.id}`;
+        const el = document.getElementById(id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          // If the element spans across the targetPoint
+          if (rect.top <= targetPoint && rect.bottom >= targetPoint - 15) {
+            activeId = id;
+            break;
           }
-        },
-        {
-          rootMargin: '-20% 0px -40% 0px', // Perfectly positioned central sector 
-          threshold: 0,
         }
-      );
-      observer.observe(el);
-      return { observer, el };
-    });
+      }
+
+      // Fallback: If no direct spanning element is found, pick the closest one to targetPoint
+      if (!activeId && filteredCategories.length > 0) {
+        let closestId = '';
+        let minDistance = Infinity;
+        for (const cat of filteredCategories) {
+          const id = `category-block-${cat.id}`;
+          const el = document.getElementById(id);
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            const distance = Math.abs(rect.top - targetPoint);
+            if (distance < minDistance) {
+              minDistance = distance;
+              closestId = id;
+            }
+          }
+        }
+        activeId = closestId || `category-block-${filteredCategories[0].id}`;
+      }
+
+      if (activeId) {
+        setActiveSection(activeId);
+      }
+    };
+
+    // Calculate once on mount/dependency change to set initial correct active state
+    handleScroll();
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
 
     return () => {
-      observers.forEach(obs => {
-        if (obs) {
-          obs.observer.unobserve(obs.el);
-        }
-      });
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
     };
   }, [categoryIdsString]);
 
@@ -205,6 +252,7 @@ export default function ServicesView({ onPageChange, initialServiceId, onOpenBoo
             <div className="lg:col-span-4 hidden lg:flex justify-center items-center relative">
               <motion.div
                 className="flex flex-col items-center"
+                style={{ rotate: -4 }}
                 animate={{
                   y: [0, -10, 0],
                 }}
@@ -294,9 +342,6 @@ export default function ServicesView({ onPageChange, initialServiceId, onOpenBoo
                 <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-950 tracking-tight leading-tight font-sans">
                   Start a Project
                 </h1>
-                <p className="text-neutral-500 text-xs sm:text-sm max-w-sm mx-auto leading-relaxed font-sans">
-                  Detail your specifications to launch your custom dashboard application.
-                </p>
               </div>
 
               {/* Core Search Controller */}
@@ -485,7 +530,8 @@ export default function ServicesView({ onPageChange, initialServiceId, onOpenBoo
                       top: '36px'
                     }}
                     animate={{ 
-                      height: `${activeIndex * 72}px`
+                      height: `${activeIndex < 0 ? 0 : activeIndex * 72}px`,
+                      opacity: activeIndex < 0 ? 0 : 1
                     }}
                     transition={{ type: "spring", stiffness: 150, damping: 22 }}
                   />
@@ -499,7 +545,7 @@ export default function ServicesView({ onPageChange, initialServiceId, onOpenBoo
                         onClick={() => {
                           const el = document.getElementById(sectionId);
                           if (el) {
-                            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                           }
                         }}
                         className="group flex flex-col justify-center text-left w-full pl-7 min-h-[72px] relative focus:outline-none transition-all cursor-pointer select-none py-1"
