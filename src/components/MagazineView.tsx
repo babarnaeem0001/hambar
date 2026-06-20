@@ -3,9 +3,13 @@ import { Article, ActivePage } from '../types';
 import { BackgroundBeams } from './ui/background-beams';
 import { 
   Search, BookOpen, Clock, ArrowRight, User, Calendar, 
-  Share2, ArrowLeft, Mail, Check, MessageSquare, Linkedin, Twitter 
+  Share2, ArrowLeft, Mail, Check, MessageSquare, Linkedin, Twitter,
+  Sparkles, PenTool, ShieldCheck
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { IconRobotOff, IconUserCheck, IconShieldCheckFilled } from '@tabler/icons-react';
 import { adminStore } from '../lib/admin-store';
+import { SafeHtmlRenderer } from './SafeHtmlRenderer';
 
 interface MagazineViewProps {
   onPageChange: (page: ActivePage) => void;
@@ -33,26 +37,30 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
   const [activeArticle, setActiveArticle] = useState<Article | null>(null);
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
-  const [sharedMessage, setSharedMessage] = useState<string | null>(null);
+  const [sharedArticleId, setSharedArticleId] = useState<string | null>(null);
+
+  const words = ['Hambar', 'Digital'];
+  const [wordIndex, setWordIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % words.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
 
   const categories = [
     'All',
     'AI Automation',
-    'Technology Consulting',
-    'SEO',
-    'Business Growth',
-    'Software Development',
-    'Web Development',
-    'Mobile Apps',
+    'Technology',
+    'Development',
     'Cybersecurity',
-    'Cloud Computing',
-    'Digital Transformation',
-    'Productivity'
+    'Others'
   ];
 
-  const handleShareClick = (title: string) => {
-    setSharedMessage(`Copied link to: "${title}"`);
-    setTimeout(() => setSharedMessage(null), 3000);
+  const handleShareClick = (id: string, title: string) => {
+    setSharedArticleId(id);
+    setTimeout(() => setSharedArticleId(null), 2500);
   };
 
   const handleSubscribe = (e: React.FormEvent) => {
@@ -68,7 +76,35 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
 
   // Filter logic
   const filteredArticles = articles.filter(art => {
-    const matchesCategory = selectedCategory === 'All' || art.category === selectedCategory;
+    if (art.status === 'draft') return false;
+    
+    const matchesCategory = selectedCategory === 'All' || (() => {
+      const artCat = art.category ? art.category.toLowerCase() : '';
+      const selCat = selectedCategory.toLowerCase();
+      
+      if (selCat === 'development') {
+        return artCat.includes('dev') || artCat.includes('software');
+      }
+      if (selCat === 'technology') {
+        return artCat.includes('tech') || artCat.includes('cloud') || artCat.includes('digital') || artCat.includes('consult');
+      }
+      if (selCat === 'ai automation') {
+        return artCat.includes('ai') || artCat.includes('automat');
+      }
+      if (selCat === 'cybersecurity') {
+        return artCat.includes('security') || artCat.includes('cyber');
+      }
+      if (selCat === 'others') {
+        const isSpecialized = artCat.includes('dev') || artCat.includes('software') || 
+                              artCat.includes('tech') || artCat.includes('cloud') || artCat.includes('digital') ||
+                              artCat.includes('consult') ||
+                              artCat.includes('ai') || artCat.includes('automat') ||
+                              artCat.includes('security') || artCat.includes('cyber');
+        return !isSpecialized;
+      }
+      return artCat === selCat;
+    })();
+
     const matchesSearch = art.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           art.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           art.content.toLowerCase().includes(searchQuery.toLowerCase());
@@ -79,14 +115,14 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
     <div className="font-sans text-slate-800" id="magazine-main-view">
       
       {activeArticle ? (
-        /* ----- Article Detail View ----- */
-        <article className="py-12 bg-white" id="magazine-detail-section">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        /* ----- Article Detail View (Full Page Open, reduced empty space) ----- */
+        <article className="py-4 bg-white" id="magazine-detail-section">
+          <div className="w-full px-4 sm:px-8 md:px-12">
             
             {/* Back to list button */}
             <button
               onClick={() => setActiveArticle(null)}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-950 mb-8 cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-950 mb-6 cursor-pointer animate-fade-in"
               id="article-back-toggle"
             >
               <ArrowLeft size={14} />
@@ -94,122 +130,73 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
             </button>
 
             {/* Article Header */}
-            <header className="space-y-4 mb-8">
-              <span className="text-[10px] uppercase font-mono font-bold bg-slate-900 text-white px-2 py-0.5 rounded">
-                {activeArticle.category}
-              </span>
-              <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight leading-tight">
+            <header className="space-y-3 mb-6">
+              <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-950 tracking-tight leading-tight">
                 {activeArticle.title}
               </h1>
               
               {activeArticle.imageUrl && (
-                <img 
-                  src={activeArticle.imageUrl} 
-                  alt={activeArticle.title} 
-                  className="w-full h-auto max-h-[500px] object-cover rounded-xl mt-6 shadow-sm"
-                />
+                <div className="w-full h-auto max-h-[460px] overflow-hidden rounded-xl border border-slate-100 bg-slate-50 mt-4 shadow-xs">
+                  <img 
+                    src={activeArticle.imageUrl} 
+                    alt={activeArticle.title} 
+                    className="w-full h-full object-cover" 
+                  />
+                </div>
               )}
 
               {/* Author & Stats bar */}
-              <div className="flex flex-wrap items-center justify-between gap-4 py-4 border-y border-slate-100 text-xs">
-                <div className="flex items-center gap-3">
-                  <img src={activeArticle.author.avatar} alt={activeArticle.author.name} className="w-10 h-10 rounded-full border border-slate-200" referrerPolicy="no-referrer" />
+              <div className="flex flex-wrap items-center justify-between gap-4 py-3 border-y border-slate-100 text-xs mt-4">
+                <div className="flex items-center gap-2.5">
+                  <img src={activeArticle.author.avatar} alt={activeArticle.author.name} className="w-8 h-8 rounded-full border border-slate-200" referrerPolicy="no-referrer" />
                   <div>
                     <h4 className="font-bold text-slate-950 leading-tight">{activeArticle.author.name}</h4>
-                    <p className="text-slate-500 text-[10px] leading-tight mt-0.5">{activeArticle.author.role}</p>
+                    <p className="text-slate-500 text-[9px] leading-tight mt-0.5">{activeArticle.author.role}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 text-slate-500 text-[11px] font-mono">
-                  <span className="flex items-center gap-1">
-                    <Calendar size={13} /> {activeArticle.date}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Clock size={13} /> {activeArticle.readTime}
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-900 text-white font-sans text-xs">
+                    {activeArticle.date}
                   </span>
                   <button 
-                    onClick={() => handleShareClick(activeArticle.title)}
-                    className="flex items-center gap-1 text-slate-700 hover:text-slate-950 font-semibold cursor-pointer"
-                    title="Share this strategic brief"
+                    onClick={() => handleShareClick(activeArticle.id, activeArticle.title)}
+                    className="inline-flex items-center justify-center p-2 rounded-full bg-slate-900 text-white hover:bg-black transition-colors cursor-pointer"
+                    title="Share this article"
                   >
-                    <Share2 size={13} /> Share
+                    {sharedArticleId === activeArticle.id ? <Check size={13} /> : <Share2 size={13} />}
                   </button>
                 </div>
               </div>
-
-              {sharedMessage && (
-                <div className="p-2.5 bg-emerald-50 border border-emerald-100 rounded text-center text-xs text-emerald-800 font-medium">
-                  {sharedMessage}
-                </div>
-              )}
             </header>
 
-            {/* Two Column Layout: TOC + Body Content */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              
-              {/* Sidebar table of contents (Col 1-4) */}
-              <div className="lg:col-span-4 p-5 bg-slate-50 border border-slate-100 rounded-lg space-y-4 sticky top-20" id="article-toc-panel">
-                <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400">Brief Overview</h3>
-                <nav className="space-y-2 text-xs font-medium text-slate-600">
-                  <a href="#toc-summary" className="block hover:text-slate-955 hover:underline">1. Executive Summary</a>
-                  <a href="#toc-areas" className="block hover:text-slate-955 hover:underline">2. Structural Workflow Areas</a>
-                  <a href="#toc-estimates" className="block hover:text-slate-955 hover:underline">3. Staged Milestones & Scale</a>
-                  <a href="#toc-security" className="block hover:text-slate-955 hover:underline">4. Data Isolation Guardrails</a>
-                </nav>
-                <div className="pt-4 border-t border-slate-200">
-                  <p className="text-[10px] text-slate-400 font-mono leading-relaxed">
-                    Published and audited strictly under Hambar guidelines. Hamid Saleem & Babar Naeem.
-                  </p>
-                </div>
+            {/* Expansive Full Page Layout for Article Body Content */}
+            <div className="w-full text-slate-800 text-sm leading-relaxed" id="article-body-content">
+              {/* Render content directly & securely via SafeHtmlRenderer */}
+              <div className="mt-2 bg-white rounded text-slate-800 break-words w-full overflow-hidden">
+                <SafeHtmlRenderer html={activeArticle.content} />
               </div>
 
-              {/* Main article Content body (Col 5-12) */}
-              <div className="lg:col-span-8 text-slate-800 text-sm leading-relaxed space-y-6" id="article-body-content">
-                <div className="prose prose-slate prose-sm text-slate-700 max-w-none">
-                  {/* Styled body sections replicating markdown titles */}
-                  <div id="toc-summary" className="space-y-2">
-                    <h3 className="text-lg font-bold text-slate-950 tracking-tight pt-2 border-b border-slate-100 pb-1">1. Strategic Context</h3>
-                    <p>Every commercial company must identify where manual administrative loops are causing overhead limits. Generative AI and automated search tunnels offer immediate paths to bypass redundant folders. Rather than implementing massive technical transformations overnight, we recommend step-by-step validation goals.</p>
-                  </div>
-
-                  <div id="toc-areas" className="space-y-2 pt-4">
-                    <h3 className="text-lg font-bold text-slate-950 tracking-tight pt-2 border-b border-slate-100 pb-1">2. Core Operational Impact</h3>
-                    <p>Modern applications should be designed with absolute performance in mind. For E-commerce or Healthcare, this implies secure checkout routes and local offline databases. For professional consulting firms, this implies centralizing customer communications to lower scheduling lag.</p>
-                  </div>
-
-                  {/* Render content directly */}
-                  <div 
-                    className="prose prose-slate max-w-none font-sans mt-4 bg-white p-5 rounded border border-slate-100 text-slate-800 break-words w-full overflow-hidden"
-                    dangerouslySetInnerHTML={{ __html: activeArticle.content }}
-                  />
-
-                  {/* Structured consultation CTA directly inside blog post */}
-                  <div className="mt-8 p-6 bg-neutral-950 text-white rounded-lg space-y-4 text-center">
-                    <h3 className="text-base font-bold">Activate this Blueprint in Your Organization</h3>
-                    <p className="text-neutral-400 text-xs max-w-md mx-auto">
-                      Inquire directly with co-founders Hamid Saleem and Babar Naeem to begin milestone implementation for your platform.
-                    </p>
-                    <button
-                      onClick={() => {
-                        if (onOpenBookingModal) {
-                          onOpenBookingModal();
-                        } else {
-                          onPageChange('book');
-                        }
-                      }}
-                      className="px-4 py-2 bg-white text-neutral-950 text-xs font-semibold rounded hover:bg-neutral-100 transition-all cursor-pointer"
-                    >
-                      Buy Service
-                    </button>
-                  </div>
-                </div>
+              {/* Back to feed and minimal contact CTA */}
+              <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-end gap-4">
+                <button
+                  onClick={() => {
+                    if (onOpenBookingModal) {
+                      onOpenBookingModal();
+                    } else {
+                      onPageChange('book');
+                    }
+                  }}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-neutral-900 hover:text-neutral-700 hover:underline cursor-pointer"
+                >
+                  Connect with Hamid & Babar &rarr;
+                </button>
               </div>
-
             </div>
 
-            {/* Related Posts */}
-            <div className="mt-16 pt-10 border-t border-slate-100 space-y-6" id="article-related-posts-section">
-              <h3 className="font-bold text-slate-950 text-lg tracking-tight">Related Articles</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {/* Related Posts widget */}
+            <div className="mt-12 pt-8 border-t border-slate-100 space-y-4" id="article-related-posts-section">
+              <h3 className="font-bold text-slate-950 text-base tracking-tight">Related Articles</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {articles.filter(a => a.id !== activeArticle.id).slice(0, 2).map(rArt => (
                   <div 
                     key={rArt.id} 
@@ -217,12 +204,12 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
                       setActiveArticle(rArt);
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
-                    className="p-4 bg-slate-50 border border-slate-150 hover:border-slate-300 rounded cursor-pointer space-y-2 transition-colors"
+                    className="p-3.5 bg-slate-50 border border-slate-150 hover:border-slate-300 rounded-xl cursor-pointer space-y-2 transition-all flex flex-col justify-between"
                   >
-                    <span className="text-[9px] font-mono uppercase bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-bold">{rArt.category}</span>
-                    <h4 className="font-bold text-slate-950 text-sm leading-snug">{rArt.title}</h4>
-                    <p className="text-slate-600 text-xs line-clamp-2">{rArt.excerpt}</p>
-                    <p className="text-slate-400 text-[10px] font-mono pt-1">{rArt.date}</p>
+                    <div>
+                      <h4 className="font-bold text-slate-950 text-xs sm:text-sm leading-snug">{rArt.title}</h4>
+                      <p className="text-slate-600 text-xs line-clamp-2 mt-1">{rArt.excerpt}</p>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -231,180 +218,234 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
           </div>
         </article>
       ) : (
-        /* ----- Feed List View ----- */
+         /* ----- Feed List View ----- */
         <div id="magazine-feed-wrapper">
           
-           {/* Header Banner */}
-          <section className="relative w-full py-24 bg-white border-b border-neutral-100 overflow-hidden flex flex-col items-center justify-center antialiased" id="magazine-hero">
-            <BackgroundBeams className="z-0" />
-            <div className="max-w-4xl mx-auto px-4 text-center space-y-6 relative z-10">
-              <span className="text-xs font-mono uppercase bg-neutral-900 text-white px-3 py-1 rounded-full font-bold">The Strategic Brief</span>
-              <h1 className="text-4xl md:text-6xl font-extrabold text-neutral-900 tracking-tight bg-clip-text bg-gradient-to-b from-neutral-950 to-neutral-600">
-                The Hambar Magazine
-              </h1>
-              <p className="text-neutral-500 text-sm max-w-2xl mx-auto leading-relaxed">
-                Refined blueprints, market perspectives, and step-by-step systems tutorials published directly by technology specialists Hamid Saleem and Babar Naeem.
-              </p>
+           {/* Header Banner - White theme with evident line animations & dual lines grid */}
+          <section className="relative w-full py-12 md:py-16 bg-white border-b border-neutral-100 overflow-hidden flex flex-col items-center justify-center antialiased" id="magazine-hero">
+            {/* Highly evident animated background lines & grid */}
+            <div className="absolute inset-0 bg-white bg-[linear-gradient(to_right,#f3f4f6_1.5px,transparent_1.5px),linear-gradient(to_bottom,#f3f4f6_1.5px,transparent_1.5px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] z-0" />
+            <BackgroundBeams className="z-0 opacity-80" />
 
-              {/* Keyword Search & Category selects */}
-              <div className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto pt-2" id="magazine-search-components">
-                <div className="relative flex-1">
-                  <Search size={16} className="absolute left-3 top-2.5 text-neutral-400" />
-                  <input
-                    type="text"
-                    placeholder="Search articles... (e.g. AI, SEO)"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-white/80 backdrop-blur border border-neutral-200 rounded-lg pl-9 pr-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-neutral-900"
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Categories Slider */}
-          <section className="bg-white border-b border-slate-100 py-3" id="magazine-categories-bar">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-thin">
-                {categories.map((cat, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors focus:outline-none ${
-                      selectedCategory === cat 
-                        ? 'bg-slate-950 text-white' 
-                        : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-950'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Main Feed Section */}
-          <section className="py-12 bg-white" id="magazine-feed-grid">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                
-                {/* Left Feed Column: Articles (Col 1-8) */}
-                <div className="lg:col-span-8 space-y-8" id="magazine-articles-list">
-                  {filteredArticles.length === 0 ? (
-                    <div className="text-center py-16 bg-slate-50 border border-slate-150 rounded space-y-2">
-                       <BookOpen size={36} className="mx-auto text-slate-300" />
-                       <h3 className="font-bold text-slate-900 text-sm">No Articles Found</h3>
-                       <p className="text-slate-500 text-xs">Try selecting another category or searching different keywords.</p>
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+              
+              {/* LEFT COLUMN: Liquid glass newsletter form - swaying and floating like other icons */}
+              <div className="w-full lg:w-[320px] shrink-0 flex justify-center lg:justify-end" id="magazine-newsletter-glass-col">
+                <motion.div
+                  animate={{
+                    y: [0, -6, 0, 6, 0],
+                    rotate: [-1.5, 1.5, -1.5],
+                  }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="w-full max-w-[260px] p-4 rounded-lg border border-neutral-200 shadow-md backdrop-blur-md flex flex-col gap-2.5 transition-all select-none overflow-hidden lg:mr-[-10px] xl:mr-[-30px] ring-1 ring-neutral-900/5 hover:ring-neutral-900/10"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(240, 243, 248, 0.35) 100%)",
+                    boxShadow: "inset 0 1px 1px rgba(255,255,255,0.45), 0 8px 30px rgba(0,0,0,0.04)"
+                  }}
+                >
+                  <div className="flex items-center gap-2 text-slate-800">
+                    <Mail size={16} className="text-slate-800/80 shrink-0" />
+                    <span className="font-bold text-xs tracking-tight text-neutral-800">Join our newsletter</span>
+                  </div>
+                  
+                  {newsletterSubscribed ? (
+                    <div className="py-2.5 px-3 bg-emerald-50/70 border border-emerald-100/80 rounded-md text-center text-[10px] text-emerald-800 font-bold" id="header-newsletter-success">
+                      <div className="flex items-center justify-center gap-1">
+                        <Check size={12} />
+                        <span>Subscribed!</span>
+                      </div>
+                      <button onClick={handleResetNewsletter} className="text-[9px] text-slate-400 hover:text-slate-600 underline mt-1 block mx-auto">Reset</button>
                     </div>
                   ) : (
-                    filteredArticles.map((art) => (
-                      <div 
-                        key={art.id} 
-                        className="p-6 bg-slate-50 border border-slate-100 rounded-lg hover:border-slate-300 transition-colors flex flex-col justify-between space-y-4"
-                        id={`article-card-${art.id}`}
-                      >
-                        <div className="space-y-4">
-                          {art.imageUrl && (
-                            <img 
-                              src={art.imageUrl} 
-                              alt={art.title} 
-                              className="w-full h-48 object-cover rounded-md cursor-pointer hover:opacity-90 transition-opacity" 
-                              onClick={() => {
-                                setActiveArticle(art);
-                                window.scrollTo({ top: 0, behavior: 'smooth' });
-                              }}
-                            />
-                          )}
-                          <div className="flex items-center gap-2 text-[10px] font-mono text-slate-500">
-                            <span className="uppercase font-semibold text-slate-700 bg-slate-200/50 px-1.5 py-0.5 rounded">{art.category}</span>
-                            <span>•</span>
-                            <span className="flex items-center gap-0.5"><Clock size={11} className="-mt-0.5" /> {art.readTime}</span>
-                          </div>
-                          <h2 
-                            onClick={() => {
-                              setActiveArticle(art);
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
-                            }} 
-                            className="text-xl font-extrabold text-slate-950 tracking-tight leading-tight hover:text-slate-700 cursor-pointer"
-                          >
-                            {art.title}
-                          </h2>
-                          <p className="text-slate-600 text-xs leading-relaxed line-clamp-3">{art.excerpt}</p>
-                        </div>
-
-                        {/* Card bottom footer */}
-                        <div className="pt-4 border-t border-slate-200/50 flex flex-wrap justify-between items-center gap-3">
-                          <div className="flex items-center gap-2.5">
-                            <img src={art.author.avatar} alt={art.author.name} className="w-8 h-8 rounded-full border border-slate-200" referrerPolicy="no-referrer" />
-                            <div>
-                              <p className="text-xs font-bold text-slate-950 leading-tight">{art.author.name}</p>
-                              <p className="text-[9px] text-slate-500 leading-none">{art.author.role}</p>
-                            </div>
-                          </div>
-                          
-                          <button
-                            onClick={() => {
-                              setActiveArticle(art);
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
-                            }}
-                            className="inline-flex items-center gap-1 text-xs font-bold text-slate-950 hover:text-slate-700 group cursor-pointer"
-                          >
-                            Read Brief <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
-                          </button>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-
-                {/* Right Feed Column: Newsletter & Info Widgets (Col 9-12) */}
-                <div className="lg:col-span-4 space-y-6" id="magazine-sidebar">
-                  
-                  {/* Newsletter subscription module */}
-                  <div className="p-6 bg-slate-950 text-white rounded-lg space-y-4" id="newsletter-subscription-box">
-                    <Mail size={24} className="text-white" />
-                    <div className="space-y-1">
-                      <h3 className="font-bold text-sm tracking-tight text-white">Subscribe to the Brief</h3>
-                      <p className="text-slate-400 text-xs leading-relaxed">
-                        Receive objective, plain-English strategic guidelines and code evaluations delivered directly by Hamid & Babar.
-                      </p>
-                    </div>
-
-                    {newsletterSubscribed ? (
-                      <div className="p-4 bg-slate-900 border border-slate-800 rounded space-y-2 text-center" id="newsletter-success-state">
-                        <Check size={20} className="text-white mx-auto" />
-                        <p className="text-xs text-slate-300 font-semibold">Subscribed Successfully!</p>
-                        <button onClick={handleResetNewsletter} className="text-[10px] text-slate-500 hover:text-white underline">Reset</button>
-                      </div>
-                    ) : (
-                      <form onSubmit={handleSubscribe} className="space-y-2">
+                    <form onSubmit={handleSubscribe} className="space-y-2">
+                      <div className="relative flex items-center h-8 bg-white rounded-md border-2 border-neutral-900 px-2 transition-colors focus-within:border-neutral-950 shadow-sm">
                         <input
-                          type="email"
-                          placeholder="Your professional email"
+                           type="email"
+                          placeholder="Your email"
                           value={newsletterEmail}
                           onChange={(e) => setNewsletterEmail(e.target.value)}
-                          className="w-full bg-slate-900 text-white placeholder-slate-500 border border-slate-800 rounded px-3 py-2 text-xs focus:outline-none focus:border-white"
+                          className="w-full bg-transparent border-none text-[10px] text-slate-800 placeholder-slate-500 focus:outline-none focus:ring-0 px-1 py-0"
                           required
                         />
-                        <button
-                          type="submit"
-                          className="w-full py-2 bg-white text-slate-950 hover:bg-slate-100 font-semibold rounded text-xs transition-colors cursor-pointer"
+                      </div>
+                      <button
+                        type="submit"
+                        className="w-full h-8 bg-neutral-950 text-white hover:bg-neutral-850 font-bold rounded-md text-[10px] transition-all cursor-pointer shadow-xs"
+                      >
+                        Subscribe
+                      </button>
+                    </form>
+                  )}
+                </motion.div>
+              </div>
+
+              {/* CENTER COLUMN: Spaced title with 3D flip container & key search */}
+              <div className="shrink-0 flex flex-col items-center text-center max-w-xl space-y-6 lg:mx-8">
+                
+                {/* Rotating Title with spaces & customized outlined rotating box */}
+                <div className="space-y-3">
+                  <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-neutral-900 tracking-tighter flex items-center justify-center gap-x-3 flex-wrap select-none w-full text-center uppercase">
+                    <span>The</span>
+                    <span className="relative inline-flex items-center justify-center font-black rounded-lg bg-neutral-950 text-white min-w-[130px] sm:min-w-[170px] md:min-w-[220px] h-[60px] md:h-[75px] shadow-sm px-4 md:px-6">
+                      <AnimatePresence mode="wait">
+                        <motion.span
+                          key={words[wordIndex]}
+                          initial={{ filter: "blur(10px)", opacity: 0, y: 15 }}
+                          animate={{ filter: "blur(0px)", opacity: 1, y: 0 }}
+                          exit={{ filter: "blur(10px)", opacity: 0, y: -15 }}
+                          transition={{ duration: 0.4, ease: "easeInOut" }}
+                          className="absolute inset-0 flex items-center justify-center text-center font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tighter uppercase"
+                          style={{ transformOrigin: "center" }}
                         >
-                          Join Strategic Newsletter
-                        </button>
-                      </form>
-                    )}
-                  </div>
-
-                  {/* Operational disclaimer */}
-                  <div className="p-5 border border-slate-150 rounded bg-slate-50 space-y-2 text-xs text-slate-600 leading-relaxed">
-                    <h4 className="font-bold text-slate-950 uppercase text-[9px] tracking-wider">Editorial Standards</h4>
-                    <p>All digital briefs in this platform represent original technical reviews authored directly by Hamid Saleem and Babar Naeem. Content contains no generic generative AI padding or duplicate marketing summaries.</p>
-                  </div>
-
+                          {words[wordIndex]}
+                        </motion.span>
+                      </AnimatePresence>
+                    </span>
+                    <span>Magazine</span>
+                  </h1>
                 </div>
 
+                {/* Keyword Search with search icon SVG */}
+                <div className="max-w-xs mx-auto pt-1 w-full" id="magazine-search-components">
+                  <div className="relative w-full">
+                    <span className="absolute left-3 top-2 text-neutral-400 flex items-center justify-center pointer-events-none">
+                      <Search size={14} />
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="Search"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full bg-white border border-neutral-200 rounded-md pl-9 pr-4 py-2 text-xs focus:outline-none focus:border-neutral-900 transition-colors font-sans focus:ring-1 focus:ring-neutral-200 shadow-sm"
+                    />
+                  </div>
+                </div>
               </div>
+
+              {/* RIGHT COLUMN: 3 Symbols scattered, swinging slightly */}
+              <div className="relative w-full lg:w-[320px] h-32 shrink-0 flex items-center justify-center lg:justify-start" id="magazine-scattered-symbols">
+                
+                {/* Symbol 1: No-AI */}
+                <motion.div
+                   animate={{ y: [-5, 5, -5], x: [-2, 2, -2] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute top-2 left-0 lg:left-4 p-3 bg-white border border-neutral-200 rounded-full shadow-xs flex items-center justify-center pointer-events-none text-neutral-900"
+                >
+                  <IconRobotOff size={28} stroke={1.5} />
+                </motion.div>
+
+                {/* Symbol 2: Human-Made */}
+                <motion.div
+                  animate={{ y: [6, -6, 6], x: [3, -3, 3] }}
+                  transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                  className="absolute bottom-1 left-20 lg:left-24 p-3 bg-white border border-neutral-200 rounded-full shadow-xs flex items-center justify-center pointer-events-none text-neutral-900"
+                >
+                  <IconUserCheck size={28} stroke={1.5} />
+                </motion.div>
+
+                {/* Symbol 3: Audited */}
+                <motion.div
+                  animate={{ y: [-4, 4, -4], x: [-1, 3, -1] }}
+                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                  className="absolute top-6 left-40 lg:left-44 p-3 bg-white border border-neutral-200 rounded-full shadow-xs flex items-center justify-center pointer-events-none text-neutral-900"
+                >
+                  <IconShieldCheckFilled size={28} />
+                </motion.div>
+
+              </div>
+
+            </div>
+          </section>
+
+          <section className="py-6 bg-white" id="magazine-feed-grid">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+              
+              <div className="w-full">
+                {/* Articles List */}
+                <div className="max-w-5xl mx-auto space-y-4" id="magazine-articles-list">
+                  {filteredArticles.length === 0 ? (
+                    <div className="text-center py-12 bg-slate-50/50 border border-slate-150 rounded-xl space-y-2">
+                       <BookOpen size={30} className="mx-auto text-slate-300" />
+                       <h3 className="font-bold text-slate-900 text-xs">No Articles Found</h3>
+                       <p className="text-slate-500 text-[11px]">Try selecting another category or searching different keywords.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {filteredArticles.map((art) => (
+                        <div 
+                          key={art.id} 
+                          onClick={() => {
+                            setActiveArticle(art);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className="p-4 bg-white border border-neutral-100 rounded-xl hover:border-neutral-300 hover:shadow-xs cursor-pointer transition-all flex flex-col gap-3 select-none"
+                          id={`article-card-${art.id}`}
+                        >
+                          {/* Space for Picture of Blog - Height is 36 (compact) */}
+                          <div className="w-full h-36 bg-neutral-50 rounded-lg overflow-hidden border border-neutral-100 flex items-center justify-center shrink-0">
+                            {art.imageUrl ? (
+                              <img 
+                                src={art.imageUrl} 
+                                alt={art.title} 
+                                className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-500" 
+                              />
+                            ) : (
+                              <div className="flex flex-col items-center justify-center text-neutral-300 gap-1.5">
+                                <BookOpen size={20} strokeWidth={1.5} />
+                                <span className="text-[9px] font-mono tracking-widest uppercase text-neutral-450">Hambar Article</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Title Only Display (Simplified) */}
+                          <div className="flex-grow">
+                            <h2 className="text-xs sm:text-sm font-bold text-neutral-900 tracking-tight leading-snug hover:text-neutral-700 break-words line-clamp-2">
+                              {art.title}
+                            </h2>
+                          </div>
+
+                          {/* Card bottom details (Simplified, no Category, no Date) */}
+                          <div className="mt-auto pt-2 border-t border-neutral-50 flex items-center justify-end">
+                            <span className="p-1 px-2.5 rounded-full bg-neutral-50 text-neutral-950 font-bold text-[10px] hover:bg-neutral-100 transition-colors flex items-center gap-1">
+                              Read Post <ArrowRight size={11} />
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Category Selector Navbar placed at bottom */}
+              <div className="w-full flex justify-center pt-8 pb-4" id="magazine-feed-category-navbar-bottom">
+                <div className="relative p-1 bg-neutral-50 rounded-xl border border-neutral-200/80 flex flex-wrap items-center justify-center gap-1 max-w-2xl shadow-xs">
+                  {categories.map((cat, idx) => {
+                    const isSelected = selectedCategory === cat;
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => setSelectedCategory(cat)}
+                        className={`relative px-4 py-2 rounded-lg text-xs font-bold tracking-tight transition-all duration-300 cursor-pointer select-none overflow-hidden ${
+                          isSelected 
+                            ? 'text-neutral-900 bg-white shadow-xs border border-neutral-250' 
+                            : 'text-neutral-500 hover:text-neutral-800 hover:bg-neutral-50'
+                        }`}
+                      >
+                        {cat}
+                        {isSelected && (
+                          <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-neutral-950" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
             </div>
           </section>
 

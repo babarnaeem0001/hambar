@@ -17,7 +17,15 @@ export default function Header({ activePage, onPageChange, onOpenBookingModal }:
   useEffect(() => {
     const loadContent = async () => {
       const list = await adminStore.getArticles();
-      setArticles(list);
+      const published = list.filter(a => a.status !== 'draft');
+      // Sort so most recent is first. Let's parse custom date strings safely, or fallback to object reference order.
+      published.sort((a, b) => {
+        const valA = a.date ? new Date(a.date).getTime() : 0;
+        const valB = b.date ? new Date(b.date).getTime() : 0;
+        if (valA && valB) return valB - valA;
+        return b.id.localeCompare(a.id);
+      });
+      setArticles(published);
     };
     loadContent();
     const handleUpdate = () => { loadContent(); };
@@ -160,15 +168,17 @@ export default function Header({ activePage, onPageChange, onOpenBookingModal }:
                           {/* Image preview with slight hover scaling */}
                           <div className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-900">
                             <img 
-                              src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80"
-                              alt="Strategic Illustration" 
+                              src={articles[0]?.imageUrl || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80"}
+                              alt={articles[0]?.title || "Strategic Illustration"} 
                               className="w-full h-full object-cover transition-transform duration-500 group-hover/bcard:scale-105"
                               referrerPolicy="no-referrer"
                             />
-                            {/* Category Badge element overlay */}
-                            <div className="absolute top-2 left-2 bg-black/80 backdrop-blur-md border border-neutral-800 px-2 py-0.5 rounded-full text-[9px] font-sans font-bold text-white uppercase">
-                              {articles[0]?.category || 'AI Automation'}
-                            </div>
+                            {/* Category Badge element overlay if exists */}
+                            {articles[0]?.category && (
+                              <div className="absolute top-2 left-2 bg-black/80 backdrop-blur-md border border-neutral-800 px-2 py-0.5 rounded-full text-[9px] font-sans font-bold text-white uppercase">
+                                {articles[0].category}
+                              </div>
+                            )}
                           </div>
 
                           <h4 className="text-white text-xs font-sans font-extrabold line-clamp-2 leading-snug group-hover/bcard:text-brand transition-colors">

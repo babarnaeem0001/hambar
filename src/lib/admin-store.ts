@@ -392,8 +392,8 @@ export const adminStore = {
 
     // Merge them by id
     const mergedMap = new Map<string, Article>();
-    localArticles.forEach(art => mergedMap.set(art.id, art));
-    mappedDb.forEach(art => mergedMap.set(art.id, art));
+    localArticles.forEach(art => mergedMap.set(art.id, { ...art, isLocalOnly: true }));
+    mappedDb.forEach(art => mergedMap.set(art.id, { ...art, isLocalOnly: false }));
 
     const deletedIds = getLocal<string>('bk_deleted_articles');
     deletedIds.forEach(id => mergedMap.delete(id));
@@ -438,10 +438,12 @@ export const adminStore = {
           image_url: newArticle.imageUrl
         }]);
         if (error) {
-          console.warn('Supabase articles insert failed (RLS), local fallback completed:', error.message);
+          console.warn('Supabase articles insert failed. Local fallback used:', error.message);
+          (newArticle as any).syncError = error.message;
         }
-      } catch (dbErr) {
-        console.warn('Supabase articles insert failed:', dbErr);
+      } catch (dbErr: any) {
+        console.warn('Supabase articles insert exception. Local fallback used:', dbErr);
+        (newArticle as any).syncError = dbErr.message || 'Connection or schema error';
       }
     }
     cachedArticles = null;
@@ -479,10 +481,12 @@ export const adminStore = {
           image_url: article.imageUrl
         }).eq('id', article.id);
         if (error) {
-          console.warn('Supabase articles update failed (RLS), local fallback completed:', error.message);
+          console.warn('Supabase articles update failed. Local fallback used:', error.message);
+          (article as any).syncError = error.message;
         }
-      } catch (e) {
-        console.warn('Supabase articles update failed:', e);
+      } catch (e: any) {
+        console.warn('Supabase articles update exception. Local fallback used:', e);
+        (article as any).syncError = e.message || 'Connection or schema error';
       }
     }
     cachedArticles = null;
@@ -506,10 +510,10 @@ export const adminStore = {
       try {
         const { error } = await supabase.from('articles').delete().eq('id', id);
         if (error) {
-          console.warn('Supabase articles delete failed:', error.message);
+          console.warn('Supabase articles delete failed. Local fallback used:', error.message);
         }
-      } catch (e) {
-        console.warn('Supabase articles delete failed:', e);
+      } catch (e: any) {
+        console.warn('Supabase articles delete exception. Local fallback used:', e);
       }
     }
     cachedArticles = null;
@@ -700,6 +704,91 @@ export const adminStore = {
     }
     cachedSubmissions = null;
     window.dispatchEvent(new CustomEvent('admin_submissions_updated'));
+  },
+
+  async syncOfflineArticles(): Promise<{ successCount: number; errors: string[] }> {
+    if (!supabase) return { successCount: 0, errors: ['Supabase client not initialized'] };
+    
+    const localArticles = getLocal<Article>('bk_articles');
+    let successCount = 0;
+    const errors: string[] = [];
+    
+    // Fetch all current database article IDs
+    let dbIds = new Set<string>();
+    try {
+      const { data, error } = await supabase.from('articles').select('id');
+      if (!error && data) {
+        dbIds = new Set(data.map(d => d.id));
+      }
+    } catch (e: any) {
+      return { successCount: 0, errors: [e.message || 'Failed to fetch existing database article IDs'] };
+    }
+    
+    // Find articles in localArticles that are not in dbIds
+    const unsynced = localArticles.filter(art => !dbIds.has(art.id));
+    
+    for (const article of unsynced) {
+      try {
+        const { error } = await supabase.from('articles').insert([{
+          id: article.id,
+          title: article.title,
+          slug: article.slug,
+          category: article.category,
+          excerpt: article.excerpt,
+          content: article.content,
+          author_name: article.author.name,
+          author_role: article.author.role,
+          author_avatar: article.author.avatar,
+          date: article.date,
+          read_time: article.readTime,
+          tags: article.tags,
+          status: article.status || 'draft',
+          image_url: article.imageUrl
+        }]);
+        if (error) {
+          errors.push(`Failed to sync "${article.title}": ${error.message}`);
+        } else {
+          successCount++;
+        }
+      } catch (err: any) {
+        errors.push(`Error syncing "${article.title}": ${err.message || err}`);
+      }
+    }
+    
+    cachedArticles = null;
+    window.dispatchEvent(new CustomEvent('admin_articles_updated'));
+    return { successCount, errors };
+  },
+
+  async pruneOfflineArticles(): Promise<number> {
+    let dbIds = new Set<string>();
+    if (supabase) {
+      try {
+        const { data, error } = await supabase.from('articles').select('id');
+        if (!error && data) {
+          dbIds = new Set(data.map(d => d.id));
+        }
+      } catch (e) {
+        console.error('Failed to fetch existing database article IDs for pruning:', e);
+      }
+    }
+    
+    const localArticles = getLocal<Article>('bk_articles');
+    
+    // Compute list of articles to keep (only if they exist in DB)
+    const filtered = localArticles.filter(art => dbIds.has(art.id));
+    saveLocal('bk_articles', filtered);
+    
+    // Filter deleted ids list as well
+    const deletedIds = getLocal<string>('bk_deleted_articles');
+    const filteredDeleted = deletedIds.filter(id => dbIds.has(id));
+    saveLocal('bk_deleted_articles', filteredDeleted);
+    
+    const countPruned = localArticles.length - filtered.length;
+    
+    cachedArticles = null;
+    window.dispatchEvent(new CustomEvent('admin_articles_updated'));
+    return countPruned;
   }
 };
 

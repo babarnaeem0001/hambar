@@ -73,3 +73,25 @@ CREATE POLICY "Allow public read" ON public.admins FOR SELECT USING (true);
 CREATE POLICY "Allow authed insert" ON public.admins FOR INSERT WITH CHECK (true);
 CREATE POLICY "Allow authed update" ON public.admins FOR UPDATE USING (true) WITH CHECK (true);
 CREATE POLICY "Allow authed delete" ON public.admins FOR DELETE USING (true);
+
+-- Fallback policies for articles table
+DROP POLICY IF EXISTS "Allow public read articles" ON public.articles;
+DROP POLICY IF EXISTS "Allow public insert articles" ON public.articles;
+DROP POLICY IF EXISTS "Allow public update articles" ON public.articles;
+DROP POLICY IF EXISTS "Allow public delete articles" ON public.articles;
+
+CREATE POLICY "Allow public read articles" ON public.articles FOR SELECT USING (true);
+CREATE POLICY "Allow public insert articles" ON public.articles FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public update articles" ON public.articles FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Allow public delete articles" ON public.articles FOR DELETE USING (true);
+
+-- Fallback policies for submissions table
+DROP POLICY IF EXISTS "Allow public read submissions" ON public.submissions;
+DROP POLICY IF EXISTS "Allow public insert submissions" ON public.submissions;
+DROP POLICY IF EXISTS "Allow public update submissions" ON public.submissions;
+DROP POLICY IF EXISTS "Allow public delete submissions" ON public.submissions;
+
+CREATE POLICY "Allow public read submissions" ON public.submissions FOR SELECT USING (true);
+CREATE POLICY "Allow public insert submissions" ON public.submissions FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public update submissions" ON public.submissions FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Allow public delete submissions" ON public.submissions FOR DELETE USING (true);

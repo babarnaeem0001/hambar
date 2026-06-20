@@ -1,0 +1,196 @@
+
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg1"
+   width="800"
+   height="800"
+   viewBox="0 0 800 800"
+   sodipodi:docname="no-ai-sign.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <title
+     id="title8">no-AI-sign</title>
+  <defs
+     id="defs1">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath2">
+      <path
+         d="M 0,600 H 600 V 0 H 0 Z"
+         transform="translate(-186.84021,-568.29041)"
+         id="path2" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath4">
+      <path
+         d="M 0,600 H 600 V 0 H 0 Z"
+         transform="translate(-519.35201,-300.49991)"
+         id="path4" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath6">
+      <path
+         d="M 0,600 H 600 V 0 H 0 Z"
+         transform="translate(-206.43991,-277.34371)"
+         id="path6" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath8">
+      <path
+         d="M 0,600 H 600 V 0 H 0 Z"
+         transform="translate(-390.95901,-209.55181)"
+         id="path8" />
+    </clipPath>
+  </defs>
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.74"
+     inkscape:cx="399.32432"
+     inkscape:cy="400"
+     inkscape:window-width="1440"
+     inkscape:window-height="830"
+     inkscape:window-x="-6"
+     inkscape:window-y="-6"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer-MC0">
+    <inkscape:page
+       x="0"
+       y="0"
+       inkscape:label="1"
+       id="page1"
+       width="800"
+       height="800"
+       margin="13.1182 12.453333 11.785334 12.453587"
+       bleed="0" />
+  </sodipodi:namedview>
+  <g
+     id="layer-MC0"
+     inkscape:groupmode="layer"
+     inkscape:label="libreclipart.org">
+    <path
+       id="path1"
+       d="m 0,0 c -34.62,-14.643 -65.697,-35.591 -92.367,-62.263 -26.671,-26.669 -47.62,-57.746 -62.262,-92.367 -15.177,-35.879 -22.871,-73.953 -22.871,-113.16 0,-39.206 7.694,-77.28 22.871,-113.159 14.642,-34.621 35.591,-65.698 62.262,-92.366 26.67,-26.673 57.747,-47.621 92.367,-62.266 35.88,-15.174 73.952,-22.871 113.159,-22.871 39.209,0 77.282,7.697 113.16,22.871 34.622,14.645 65.698,35.593 92.368,62.266 26.672,26.668 47.619,57.745 62.263,92.366 15.175,35.879 22.87,73.953 22.87,113.159 0,39.207 -7.695,77.279 -22.87,113.16 -14.644,34.621 -35.591,65.698 -62.263,92.367 C 292.017,-35.591 260.941,-14.643 226.319,0 190.441,15.176 152.368,22.871 113.159,22.871 73.952,22.871 35.88,15.176 0,0"
+       style="fill:#ec1c24;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       transform="matrix(1.3333333,0,0,-1.3333333,249.12027,42.279467)"
+       clip-path="url(#clipPath2)" />
+    <path
+       id="path3"
+       d="m 0,0 c 0,-121.145 -98.206,-219.35 -219.353,-219.35 -121.143,0 -219.351,98.205 -219.351,219.35 0,121.145 98.208,219.35 219.351,219.35 C -98.206,219.35 0,121.145 0,0"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       transform="matrix(1.3333333,0,0,-1.3333333,692.46933,399.33347)"
+       clip-path="url(#clipPath4)" />
+    <path
+       id="path5"
+       d="M 0,0 H 71.207 L 35.278,98.356 Z m 95.593,-66.166 -11.38,29.913 H -12.68 l -11.381,-30.563 c -4.445,-11.924 -8.237,-19.972 -11.379,-24.143 -3.145,-4.171 -8.291,-6.259 -15.445,-6.259 -6.07,0 -11.435,2.223 -16.094,6.666 -4.661,4.443 -6.991,9.483 -6.991,15.119 0,3.251 0.541,6.61 1.626,10.079 1.082,3.468 2.87,8.291 5.365,14.469 l 60.964,154.768 c 1.733,4.443 3.821,9.78 6.259,16.014 2.439,6.23 5.04,11.405 7.804,15.525 2.764,4.118 6.393,7.451 10.892,9.998 4.497,2.545 10.051,3.821 16.664,3.821 6.718,0 12.328,-1.276 16.826,-3.821 4.496,-2.547 8.129,-5.827 10.892,-9.836 2.764,-4.01 5.093,-8.319 6.991,-12.923 1.895,-4.609 4.308,-10.758 7.234,-18.453 l 62.266,-153.792 c 4.877,-11.705 7.315,-20.215 7.315,-25.523 0,-5.529 -2.303,-10.596 -6.909,-15.202 -4.608,-4.605 -10.161,-6.909 -16.664,-6.909 -3.795,0 -7.046,0.679 -9.754,2.032 -2.71,1.357 -4.986,3.196 -6.828,5.528 -1.844,2.329 -3.82,5.906 -5.934,10.729 -2.113,4.822 -3.93,9.076 -5.446,12.763"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       transform="matrix(1.3333333,0,0,-1.3333333,275.2532,430.2084)"
+       clip-path="url(#clipPath6)" />
+    <path
+       id="path7"
+       d="m 0,0 v 187.77 c 0,9.754 2.221,17.069 6.666,21.947 4.442,4.877 10.186,7.316 17.232,7.316 7.26,0 13.141,-2.413 17.639,-7.235 4.496,-4.824 6.747,-12.168 6.747,-22.028 V 0 c 0,-9.863 -2.251,-17.232 -6.747,-22.11 -4.498,-4.877 -10.379,-7.316 -17.639,-7.316 -6.937,0 -12.655,2.467 -17.151,7.398 C 2.248,-17.098 0,-9.755 0,0"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       transform="matrix(1.3333333,0,0,-1.3333333,521.27867,520.5976)"
+       clip-path="url(#clipPath8)" />
+  </g>
+  <metadata
+     id="metadata8">
+    <?xpacket begin="﻿" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 9.1-c002 116.09864a8, 2024/08/02-05:47:26        ">
+   <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <rdf:Description rdf:about=""
+            xmlns:dc="http://purl.org/dc/elements/1.1/"
+            xmlns:xmpRights="http://ns.adobe.com/xap/1.0/rights/"
+            xmlns:Iptc4xmpCore="http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/"
+            xmlns:xmp="http://ns.adobe.com/xap/1.0/"
+            xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/"
+            xmlns:stEvt="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#">
+         <dc:title>
+            <rdf:Alt>
+               <rdf:li xml:lang="x-default">no-AI-sign</rdf:li>
+            </rdf:Alt>
+         </dc:title>
+         <dc:creator>
+            <rdf:Seq>
+               <rdf:li>libreclipart.org</rdf:li>
+            </rdf:Seq>
+         </dc:creator>
+         <dc:rights>
+            <rdf:Alt>
+               <rdf:li xml:lang="x-default">This image is in public domain by libreclipart.org</rdf:li>
+            </rdf:Alt>
+         </dc:rights>
+         <xmpRights:Marked>False</xmpRights:Marked>
+         <xmpRights:UsageTerms>
+            <rdf:Alt>
+               <rdf:li xml:lang="x-default">Creative Commons Zero</rdf:li>
+            </rdf:Alt>
+         </xmpRights:UsageTerms>
+         <Iptc4xmpCore:CreatorContactInfo>
+            <rdf:Description>
+               <Iptc4xmpCore:CiUrlWork>https://www.libreclipart.org</Iptc4xmpCore:CiUrlWork>
+            </rdf:Description>
+         </Iptc4xmpCore:CreatorContactInfo>
+         <xmp:MetadataDate>2025-05-16T21:29:41+02:00</xmp:MetadataDate>
+         <xmpMM:InstanceID>xmp.iid:19ec6f4a-5014-2f4f-81eb-efb2dabe06a5</xmpMM:InstanceID>
+         <xmpMM:DocumentID>xmp.did:19ec6f4a-5014-2f4f-81eb-efb2dabe06a5</xmpMM:DocumentID>
+         <xmpMM:OriginalDocumentID>xmp.did:19ec6f4a-5014-2f4f-81eb-efb2dabe06a5</xmpMM:OriginalDocumentID>
+         <xmpMM:History>
+            <rdf:Seq>
+               <rdf:li>
+                  <rdf:Description>
+                     <stEvt:action>saved</stEvt:action>
+                     <stEvt:instanceID>xmp.iid:19ec6f4a-5014-2f4f-81eb-efb2dabe06a5</stEvt:instanceID>
+                     <stEvt:when>2025-05-16T21:29:41+02:00</stEvt:when>
+                     <stEvt:softwareAgent>Adobe Bridge 2024</stEvt:softwareAgent>
+                     <stEvt:changed>/metadata</stEvt:changed>
+                  </rdf:Description>
+               </rdf:li>
+            </rdf:Seq>
+         </xmpMM:History>
+      </rdf:Description>
+   </rdf:RDF>
+</x:xmpmeta>
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                           
+<?xpacket end="w"?>
+  </metadata>
+</svg>

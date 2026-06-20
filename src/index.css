@@ -166,3 +166,21 @@ body {
   scrollbar-width: none;  /* Firefox */
 }
 
+@keyframes loading-bar {
+  0% {
+    left: 0%;
+    width: 0%;
+  }
+  50% {
+    left: 0%;
+    width: 100%;
+  }
+  100% {
+    left: 100%;
+    width: 0%;
+  }
+}
+.animate-loading-bar {
+  animation: loading-bar 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+

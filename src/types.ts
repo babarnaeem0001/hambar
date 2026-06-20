@@ -44,6 +44,7 @@ export interface Article {
   status?: 'published' | 'draft';
   imageUrl?: string;
   authorEmail?: string;
+  isLocalOnly?: boolean;
 }
 
 export interface ProjectItem {

@@ -4,7 +4,8 @@ import { Article } from '../types';
 import { 
   LayoutDashboard, FileText, MessageSquare, Plus, Save, 
   Trash2, Edit, CheckCircle2, AlertCircle, Clock, Eye, X,
-  Search, ArrowUpRight, ListTodo, Archive, RefreshCw, Lock, UserPlus, ChevronDown, BarChart2, Activity, Users, LogOut
+  Search, ArrowUpRight, ListTodo, Archive, RefreshCw, Lock, UserPlus, ChevronDown, BarChart2, Activity, Users, LogOut,
+  Cloud, CloudOff, Check
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -13,6 +14,7 @@ import Prism from 'prismjs';
 import 'prismjs/components/prism-markup';
 import 'prismjs/components/prism-css';
 import 'prismjs/themes/prism.css';
+import { SafeHtmlRenderer } from './SafeHtmlRenderer';
 
 export default function AdminView() {
   // Authentication
@@ -53,6 +55,8 @@ export default function AdminView() {
     tags: '', readTime: '5 min read'
   });
   const [showPreview, setShowPreview] = useState(true);
+  const [isSyncingArticles, setIsSyncingArticles] = useState(false);
+  const [isPruningArticles, setIsPruningArticles] = useState(false);
   
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [confirmModal, setConfirmModal] = useState<{
@@ -264,8 +268,22 @@ export default function AdminView() {
 
     const performSave = async () => {
       try {
-        if (editingBlogId) await adminStore.updateArticle(payload); else await adminStore.addArticle(payload);
-        triggerToast(editingBlogId ? 'Updated!' : (status === 'draft' ? 'Saved as Draft' : 'Published!'));
+        let resultArticle: any;
+        if (editingBlogId) {
+          await adminStore.updateArticle(payload);
+          resultArticle = payload;
+        } else {
+          resultArticle = await adminStore.addArticle(payload);
+        }
+        
+        if (resultArticle && resultArticle.syncError) {
+          triggerToast(
+            `${editingBlogId ? 'Updated' : (status === 'draft' ? 'Saved' : 'Published')} locally! (Supabase Sync: ${resultArticle.syncError})`, 
+            'error'
+          );
+        } else {
+          triggerToast(editingBlogId ? 'Updated!' : (status === 'draft' ? 'Saved as Draft' : 'Published!'));
+        }
         setIsEditingBlog(false);
         loadData();
       } catch (err: any) {
@@ -308,6 +326,47 @@ export default function AdminView() {
         await adminStore.deleteArticle(id); 
         triggerToast('Deleted.'); 
         loadData();
+      }
+    });
+  };
+
+  const handleSyncArticles = async () => {
+    setIsSyncingArticles(true);
+    try {
+      const res = await adminStore.syncOfflineArticles();
+      if (res.successCount > 0) {
+        triggerToast(`Successfully synced ${res.successCount} local article(s) to Supabase!`, 'success');
+      } else if (res.errors.length > 0) {
+        triggerToast(`Sync failed: ${res.errors.join(', ')}`, 'error');
+      } else {
+        triggerToast('All articles are already synced with Supabase!', 'success');
+      }
+      loadData();
+    } catch (err: any) {
+      triggerToast(err.message || 'Synchronization failed', 'error');
+    } finally {
+      setIsSyncingArticles(false);
+    }
+  };
+
+  const handlePruneArticles = async () => {
+    setConfirmModal({
+      title: 'Delete Unsynced Offline Articles?',
+      message: 'This will permanently delete all articles stored in your local browser that are not synced to the cloud database. This cannot be undone.',
+      confirmText: 'Delete Offline Articles',
+      isDanger: true,
+      onConfirm: async () => {
+        setConfirmModal(null);
+        setIsPruningArticles(true);
+        try {
+          const removedCount = await adminStore.pruneOfflineArticles();
+          triggerToast(`Deleted ${removedCount} offline-only article(s) that were not in the database!`, 'success');
+          loadData();
+        } catch (err: any) {
+          triggerToast(err.message || 'Failed to delete offline articles', 'error');
+        } finally {
+          setIsPruningArticles(false);
+        }
       }
     });
   };
@@ -552,16 +611,7 @@ export default function AdminView() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 { label: 'Active Inquiries', val: submissions.length, icon: MessageSquare },
-                { label: 'Published Articles', val: (() => {
-                  const isSuper = currentAdmin?.email === 'hambar0011@gmail.com' || currentAdmin?.role === 'Super Admin';
-                  return articles.filter(art => {
-                    if (isSuper) return true;
-                    if (!currentAdmin) return false;
-                    const isAuthorEmailMatch = art.authorEmail?.toLowerCase() === currentAdmin.email.toLowerCase();
-                    const isAuthorNameMatch = !art.authorEmail && art.author?.name === currentAdmin.name;
-                    return isAuthorEmailMatch || isAuthorNameMatch;
-                  }).length;
-                })(), icon: FileText },
+                { label: 'Published Articles', val: articles.filter(art => art.status !== 'draft').length, icon: FileText },
                 { label: 'Resolution Rate', val: submissions.length ? `${Math.round((submissions.filter(s=>s.status==='resolved').length/submissions.length)*100)}%` : '100%', icon: CheckCircle2 }
               ].map((stat, i) => (
                 <div key={i} className="p-6 bg-white rounded-xl border border-neutral-200 flex items-center justify-between shadow-sm">
@@ -858,8 +908,37 @@ export default function AdminView() {
           <div className="space-y-6 animate-fade-in">
             {!isEditingBlog ? (
               <>
+                {articles.some(art => art.isLocalOnly) && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 animate-fade-in">
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-bold text-amber-900 flex items-center gap-1.5">
+                        <span>⚠️ {articles.filter(art => art.isLocalOnly).length} Local Article(s) Detected</span>
+                      </h4>
+                      <p className="text-xs text-amber-700 leading-relaxed max-w-2xl">
+                        These articles are stored only in your local browser (possibly because Supabase RLS was previously active when they were created). They will <strong>not</strong> show up on other devices (like your phone) until they are synced with the cloud database.
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2 shrink-0">
+                      <button
+                        onClick={handleSyncArticles}
+                        disabled={isSyncingArticles}
+                        className="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white rounded-lg text-xs font-bold transition-all cursor-pointer shadow-sm select-none"
+                      >
+                        {isSyncingArticles ? 'Syncing...' : 'Sync to Cloud Now'}
+                      </button>
+                      <button
+                        onClick={handlePruneArticles}
+                        disabled={isPruningArticles}
+                        className="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white rounded-lg text-xs font-bold transition-all cursor-pointer shadow-sm select-none"
+                      >
+                        {isPruningArticles ? 'Deleting...' : 'Delete Offline Articles'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex justify-end mb-4">
-                  <button onClick={startCreateBlog} className="px-4 py-2 bg-neutral-900 text-white text-xs font-medium rounded-lg hover:bg-black transition-colors flex items-center gap-2">
+                  <button onClick={startCreateBlog} className="px-4 py-2 bg-neutral-900 text-white text-xs font-medium rounded-lg hover:bg-black transition-colors flex items-center gap-2 select-none cursor-pointer">
                     <Plus size={14} /> New Post
                   </button>
                 </div>
@@ -880,16 +959,40 @@ export default function AdminView() {
 
                     return visibleArticles.map(art => (
                       <div key={art.id} className="bg-white border border-neutral-200 rounded-xl p-5 hover:shadow-md transition-shadow flex flex-col">
-                        <h3 className="font-bold text-sm tracking-tight mb-2 line-clamp-2">
-                          {art.status === 'draft' && <span className="mr-2 text-[10px] font-bold bg-neutral-100 text-neutral-500 uppercase tracking-widest px-2 py-0.5 rounded">Draft</span>}
+                        <div className="flex items-center justify-between gap-2 mb-2.5">
+                          <div className="flex flex-wrap gap-1.5">
+                            {art.status === 'draft' && (
+                              <span className="text-[10px] font-medium bg-neutral-50 text-neutral-600 border border-neutral-200/60 px-2 py-0.5 rounded-full flex items-center gap-1 select-none" title="Draft">
+                                <Clock size={11} className="text-neutral-400" />
+                                <span>Draft</span>
+                              </span>
+                            )}
+                          </div>
+                          
+                          {art.isLocalOnly ? (
+                            <div className="flex items-center justify-center bg-rose-50 border border-rose-100 p-1.5 rounded-full text-rose-600 cursor-help shrink-0 w-6 h-6" title="Offline Only (Unsynced)">
+                              <CloudOff size={12} className="text-rose-500" />
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-center bg-emerald-50 border border-emerald-100 p-1.5 rounded-full text-emerald-600 cursor-help shrink-0 w-6 h-6" title="Cloud Synced & Protected">
+                              <div className="relative w-3.5 h-3.5 flex items-center justify-center">
+                                <Cloud size={13} className="text-emerald-500 fill-emerald-500/10" />
+                                <span className="absolute -bottom-0.5 -right-0.5 bg-emerald-600 text-white rounded-full p-px flex items-center justify-center scale-75 border-emerald-50 border">
+                                  <Check size={6} strokeWidth={5} />
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <h3 className="font-bold text-sm tracking-tight mb-2 line-clamp-2 text-slate-900 leading-snug">
                           {art.title}
                         </h3>
                         <p className="text-xs text-neutral-500 line-clamp-3 mb-4">{art.excerpt}</p>
                         <div className="mt-auto pt-4 border-t border-neutral-100 flex justify-between items-center text-xs">
                           <span className="text-neutral-400 font-medium">{art.date}</span>
                           <div className="flex gap-2">
-                            <button onClick={()=>startEditBlog(art)} className="p-1 hover:text-neutral-900 text-neutral-400"><Edit size={14}/></button>
-                            <button onClick={()=>deleteBlog(art.id)} className="p-1 hover:text-rose-600 text-neutral-400"><Trash2 size={14}/></button>
+                            <button onClick={()=>startEditBlog(art)} className="p-1 hover:text-neutral-900 text-neutral-400 cursor-pointer"><Edit size={14}/></button>
+                            <button onClick={()=>deleteBlog(art.id)} className="p-1 hover:text-rose-600 text-neutral-400 cursor-pointer"><Trash2 size={14}/></button>
                           </div>
                         </div>
                       </div>
@@ -960,7 +1063,7 @@ export default function AdminView() {
                           }} />
                         </label>
                       </div>
-                      <div className="w-full bg-white border border-neutral-200 rounded-lg outline-none focus-within:border-neutral-900 overflow-hidden font-mono text-xs">
+                      <div className="w-full max-h-[450px] overflow-y-auto bg-white border border-neutral-200 rounded-lg outline-none focus-within:border-neutral-900 font-mono text-xs">
                         <Editor
                           value={blogForm.content}
                           onValueChange={code => setBlogForm({ ...blogForm, content: code })}
@@ -995,10 +1098,9 @@ export default function AdminView() {
                         </div>
                       </div>
                       {blogForm.content ? (
-                        <div 
-                          className="prose prose-sm max-w-none prose-slate leading-relaxed space-y-4 text-sm text-neutral-800"
-                          dangerouslySetInnerHTML={{ __html: blogForm.content }} 
-                        />
+                        <div className="text-sm text-neutral-800">
+                          <SafeHtmlRenderer html={blogForm.content} />
+                        </div>
                       ) : (
                         <p className="text-sm text-neutral-400 italic">Typing body content will reflect here...</p>
                       )}
