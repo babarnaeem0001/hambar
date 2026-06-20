@@ -43,6 +43,7 @@ export interface Article {
   tags: string[];
   status?: 'published' | 'draft';
   imageUrl?: string;
+  authorEmail?: string;
 }
 
 export interface ProjectItem {

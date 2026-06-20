@@ -43,6 +43,8 @@ export default function BookView({ initialServiceName, onClose, isModal }: BookV
     additionalServices: [] as string[],
     otherServiceText: '',
     address: '',
+    city: '',
+    country: '',
     meetingDate: '',
     meetingTimeSlot: '',
   });
@@ -51,6 +53,31 @@ export default function BookView({ initialServiceName, onClose, isModal }: BookV
   const [isPhoneDropdownOpen, setIsPhoneDropdownOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
+
+  const [addressSuggestions, setAddressSuggestions] = useState<string[]>([]);
+  const [showAddressSuggestions, setShowAddressSuggestions] = useState(false);
+  const [isMapsLoaded, setIsMapsLoaded] = useState(false);
+
+  React.useEffect(() => {
+    const apiKey = (process.env.GOOGLE_MAPS_PLATFORM_KEY) || '';
+    if (!apiKey) return;
+    if ((window as any).google && (window as any).google.maps) {
+      setIsMapsLoaded(true);
+      return;
+    }
+    const existingScript = document.getElementById('google-maps-api-script');
+    if (existingScript) {
+      existingScript.addEventListener('load', () => setIsMapsLoaded(true));
+      return;
+    }
+    const script = document.createElement('script');
+    script.id = 'google-maps-api-script';
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.addEventListener('load', () => setIsMapsLoaded(true));
+    document.head.appendChild(script);
+  }, []);
 
   // Popular services options
   const servicesList = [
@@ -293,19 +320,80 @@ export default function BookView({ initialServiceName, onClose, isModal }: BookV
     '09:30 AM', '11:00 AM', '01:30 PM', '03:00 PM', '04:30 PM'
   ];
 
+  // Fallback real addresses
+  const REAL_ADDRESS_FALLBACKS = [
+    "1600 Amphitheatre Pkwy, Mountain View, CA 94043",
+    "1 Infinite Loop, Cupertino, CA 95014",
+    "One Hacker Way, Menlo Park, CA 94025",
+    "One Microsoft Way, Redmond, WA 98052",
+    "350 5th Ave, New York, NY 10118",
+    "601 Townsend St, San Francisco, CA 94103",
+    "111 8th Ave, New York, NY 10011",
+    "410 Terry Ave N, Seattle, WA 98109",
+    "100 Bovet Rd, San Mateo, CA 94402",
+    "530 Lytton Ave, Palo Alto, CA 94301"
+  ];
+
+  const fetchAddressPredictions = (text: string) => {
+    if (!text || text.trim().length < 3) {
+      setAddressSuggestions([]);
+      return;
+    }
+
+    if (isMapsLoaded && (window as any).google?.maps?.places?.AutocompleteService) {
+      try {
+        const service = new (window as any).google.maps.places.AutocompleteService();
+        service.getPlacePredictions(
+          { input: text, types: ['address'] },
+          (predictions: any, status: any) => {
+            if (status === 'OK' && predictions) {
+              setAddressSuggestions(predictions.map((p: any) => p.description));
+            } else {
+              const filtered = REAL_ADDRESS_FALLBACKS.filter(addr => 
+                addr.toLowerCase().includes(text.toLowerCase())
+              );
+              setAddressSuggestions(filtered);
+            }
+          }
+        );
+        return;
+      } catch (e) {
+        console.warn('AutocompleteService error:', e);
+      }
+    }
+
+    const filtered = REAL_ADDRESS_FALLBACKS.filter(addr => 
+      addr.toLowerCase().includes(text.toLowerCase())
+    );
+    setAddressSuggestions(filtered);
+  };
+
+  const handleAddressChange = (val: string) => {
+    setFormData(prev => ({ ...prev, address: val }));
+    fetchAddressPredictions(val);
+    setShowAddressSuggestions(true);
+  };
+
   // Validation checks per step
   const canGoNext = () => {
     if (step === 1) {
-      return formData.name.trim() !== '' && formData.email.trim() !== '' && formData.phone.trim() !== '';
+      const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim());
+      const phoneOnlyDigits = /^\d+$/.test(formData.phone);
+      const phoneValid = formData.phone.length >= 7 && formData.phone.length <= 15 && phoneOnlyDigits;
+      return formData.name.trim().length >= 2 && emailValid && phoneValid;
     }
     if (step === 2) {
-      return formData.companyName.trim() !== '' && formData.description.trim() !== '';
+      const isUrlValid = !formData.websiteUrl.trim() || /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/.test(formData.websiteUrl.trim());
+      const isDescValid = formData.description.trim().length >= 20 && formData.description.trim().length <= 500;
+      return formData.companyName.trim() !== '' && isDescValid && isUrlValid;
     }
     if (step === 3) {
       if (formData.primaryService === 'Other (Specify below)' && formData.otherServiceText.trim() === '') {
         return false;
       }
-      return formData.address.trim() !== '';
+      const hasFullAddress = formData.address.trim() !== '';
+      const hasCityAndCountry = formData.city.trim() !== '' && formData.country.trim() !== '';
+      return hasFullAddress || hasCityAndCountry;
     }
     if (step === 4) {
       return formData.meetingDate !== '' && formData.meetingTimeSlot !== '';
@@ -423,6 +511,8 @@ export default function BookView({ initialServiceName, onClose, isModal }: BookV
     await new Promise(resolve => setTimeout(resolve, 1400));
     
     // Persist to adminStore
+    const computedAddress = formData.address.trim() || (formData.city && formData.country ? `${formData.city.trim()}, ${formData.country.trim()}` : '');
+
     adminStore.addSubmission({
       type: 'booking',
       name: formData.name,
@@ -437,7 +527,8 @@ export default function BookView({ initialServiceName, onClose, isModal }: BookV
       additionalServices: formData.additionalServices,
       meetingDate: formData.meetingDate || undefined,
       meetingTimeSlot: formData.meetingTimeSlot || undefined,
-      uploadedFilesCount: uploadedFiles.length
+      uploadedFilesCount: uploadedFiles.length,
+      address: computedAddress || undefined
     });
 
     setSubmitting(false);
@@ -598,7 +689,7 @@ export default function BookView({ initialServiceName, onClose, isModal }: BookV
                             required
                             value={formData.name}
                             onChange={e => setFormData({ ...formData, name: e.target.value })}
-                            placeholder="Hamid Saleem"
+                            placeholder="John Doe"
                             className="w-full bg-neutral-950 border border-neutral-800 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-brand transition-colors text-white text-xs sm:text-sm"
                           />
                         </div>
@@ -615,10 +706,17 @@ export default function BookView({ initialServiceName, onClose, isModal }: BookV
                             required
                             value={formData.email}
                             onChange={e => setFormData({ ...formData, email: e.target.value })}
-                            placeholder="hamid@hb-digital.co"
-                            className="w-full bg-neutral-950 border border-neutral-800 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-brand transition-colors text-white text-xs sm:text-sm"
+                            placeholder="name@example.com"
+                            className={`w-full bg-neutral-950 border rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none transition-colors text-white text-xs sm:text-sm ${
+                              formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
+                                ? 'border-red-500/60 focus:border-red-400'
+                                : 'border-neutral-800 focus:border-brand'
+                            }`}
                           />
                         </div>
+                        {formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim()) && (
+                          <p className="text-[10px] text-red-400 font-sans mt-0.5">Please enter a valid email address.</p>
+                        )}
                       </div>
                     </div>
 
@@ -667,12 +765,15 @@ export default function BookView({ initialServiceName, onClose, isModal }: BookV
                             type="tel"
                             required
                             value={formData.phone}
-                            onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                            placeholder="(555) 000-0000"
+                            onChange={e => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, '') })}
+                            placeholder="1234567890"
                             className="w-full bg-neutral-950 border border-neutral-800 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-brand transition-colors text-white text-xs sm:text-sm"
                           />
                         </div>
                       </div>
+                      {formData.phone && formData.phone.length < 7 && (
+                        <p className="text-[10px] text-red-500/70 font-sans">Phone number must be at least 7 digits (only numbers allowed).</p>
+                      )}
                     </div>
                   </motion.div>
                 )}
@@ -699,7 +800,7 @@ export default function BookView({ initialServiceName, onClose, isModal }: BookV
                             required
                             value={formData.companyName}
                             onChange={e => setFormData({ ...formData, companyName: e.target.value })}
-                            placeholder="My Startup LLC / Personal Brand"
+                            placeholder="Example LLC"
                             className="w-full bg-neutral-950 border border-neutral-800 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-brand transition-colors text-white text-xs sm:text-sm"
                           />
                         </div>
@@ -712,53 +813,69 @@ export default function BookView({ initialServiceName, onClose, isModal }: BookV
                         <div className="relative">
                           <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
                           <input 
-                            type="url"
+                            type="text"
                             value={formData.websiteUrl}
                             onChange={e => setFormData({ ...formData, websiteUrl: e.target.value })}
-                            placeholder="https://yoursite.com"
-                            className="w-full bg-neutral-950 border border-neutral-800 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-brand transition-colors text-white text-xs sm:text-sm"
+                            placeholder="https://example.com"
+                            className={`w-full bg-neutral-950 border rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none transition-colors text-white text-xs sm:text-sm ${
+                              formData.websiteUrl && !/^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/.test(formData.websiteUrl.trim())
+                                ? 'border-red-500/60 focus:border-red-400'
+                                : 'border-neutral-800 focus:border-brand'
+                            }`}
                           />
                         </div>
+                        {formData.websiteUrl && !/^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/.test(formData.websiteUrl.trim()) && (
+                          <p className="text-[10px] text-red-400 font-sans mt-0.5">Please enter a valid URL / link.</p>
+                        )}
                       </div>
                     </div>
 
                     {/* Description Paragraph Container */}
                     <div className="space-y-1.5 flex flex-col">
-                      <label className="text-xs font-semibold text-neutral-400 font-sans">
-                        Tell us about your project or core bottlenecks <span className="text-brand">*</span>
-                      </label>
+                      <div className="flex justify-between items-center">
+                        <label className="text-xs font-semibold text-neutral-400 font-sans">
+                          About Your Project <span className="text-brand">*</span>
+                        </label>
+                        <span className={`text-[10px] font-mono ${formData.description.length < 20 || formData.description.length > 500 ? 'text-red-400' : 'text-neutral-500'}`}>
+                          {formData.description.length} / 500
+                        </span>
+                      </div>
                       <textarea 
                         required
                         value={formData.description}
                         onChange={e => setFormData({ ...formData, description: e.target.value })}
-                        placeholder="Please details what spreadsheets need automation, system load targets, cloud budgets, or website ranking objectives."
+                        placeholder="Project details..."
+                        maxLength={500}
                         rows={4}
                         className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-brand transition-colors text-white leading-relaxed"
                       />
+                      {formData.description.length > 0 && formData.description.length < 20 && (
+                        <p className="text-[10px] text-red-400 font-sans">Please write at least 20 characters.</p>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {/* Interactive NDA Toggle Switch Cards */}
                       <div className="space-y-2">
                         <label className="text-xs font-semibold text-neutral-400 font-sans block">
-                          Is Mutual NDA Required?
+                          Mutual NDA (Optional)
                         </label>
                         <div className="grid grid-cols-2 gap-2">
                           <button
                             type="button"
                             onClick={() => setFormData({ ...formData, ndaRequired: 'yes' })}
-                            className={`py-2.5 px-3 rounded-xl border text-xs font-medium font-sans text-center transition-all ${
+                            className={`py-2.5 px-3 rounded-xl border text-xs font-medium font-sans text-center transition-all cursor-pointer ${
                               formData.ndaRequired === 'yes'
                                 ? 'bg-brand/10 border-brand text-brand'
                                 : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:border-neutral-700'
                             }`}
                           >
-                            ⚠️ YES, NDA
+                            Yes, NDA
                           </button>
                           <button
                             type="button"
                             onClick={() => setFormData({ ...formData, ndaRequired: 'no' })}
-                            className={`py-2.5 px-3 rounded-xl border text-xs font-medium font-sans text-center transition-all ${
+                            className={`py-2.5 px-3 rounded-xl border text-xs font-medium font-sans text-center transition-all cursor-pointer ${
                               formData.ndaRequired === 'no'
                                 ? 'bg-neutral-950 border-neutral-800 text-neutral-300'
                                 : 'bg-neutral-950 border-neutral-800 text-neutral-500 hover:border-neutral-700'
@@ -767,6 +884,9 @@ export default function BookView({ initialServiceName, onClose, isModal }: BookV
                             No NDA Needed
                           </button>
                         </div>
+                        <p className="text-[10px] text-neutral-500 font-sans mt-1 leading-normal">
+                          * An NDA (Non-Disclosure Agreement) ensures all shared business ideas and project specifications remain completely confidential.
+                        </p>
                       </div>
 
                       {/* Referral source Dropdown select box */}
@@ -825,7 +945,7 @@ export default function BookView({ initialServiceName, onClose, isModal }: BookV
                       </div>
 
                       {/* Operational Address */}
-                      <div className="space-y-1.5 flex flex-col">
+                      <div className="space-y-1.5 flex flex-col relative" id="address-container">
                         <label className="text-xs font-semibold text-neutral-400 font-sans">
                           Operational/Postal Address <span className="text-brand">*</span>
                         </label>
@@ -833,13 +953,73 @@ export default function BookView({ initialServiceName, onClose, isModal }: BookV
                           <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
                           <input 
                             type="text"
-                            required
+                            required={!formData.city.trim() && !formData.country.trim()}
                             value={formData.address}
-                            onChange={e => setFormData({ ...formData, address: e.target.value })}
-                            placeholder="123 Silicon Boulevard, SF"
+                            onChange={e => handleAddressChange(e.target.value)}
+                            onFocus={() => setShowAddressSuggestions(true)}
+                            onBlur={() => setTimeout(() => setShowAddressSuggestions(false), 200)}
+                            placeholder="Type or enter your address..."
                             className="w-full bg-neutral-950 border border-neutral-800 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-brand transition-colors text-white text-xs sm:text-sm"
                           />
                         </div>
+                        {showAddressSuggestions && addressSuggestions.length > 0 && (
+                          <div className="absolute left-0 right-0 top-[68px] bg-neutral-900 border border-neutral-800 rounded-xl shadow-xl z-50 py-1.5 max-h-48 overflow-y-auto">
+                            {addressSuggestions.map((suggestion, index) => (
+                              <button
+                                key={index}
+                                type="button"
+                                onMouseDown={() => {
+                                  setFormData(prev => ({ ...prev, address: suggestion }));
+                                  setAddressSuggestions([]);
+                                  setShowAddressSuggestions(false);
+                                }}
+                                className="w-full text-left px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-200 transition-colors border-b border-neutral-800/40 last:border-none flex items-center gap-2 cursor-pointer"
+                              >
+                                <span className="text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-mono font-bold uppercase shrink-0">
+                                  {isMapsLoaded ? 'Live API' : 'Real Location'}
+                                </span>
+                                <span className="truncate">{suggestion}</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* City input */}
+                      <div className="space-y-1.5 flex flex-col">
+                        <label className="text-xs font-semibold text-neutral-400 font-sans">
+                          City {!formData.address.trim() && <span className="text-brand">*</span>}
+                        </label>
+                        <input 
+                          type="text"
+                          required={!formData.address.trim()}
+                          value={formData.city}
+                          onChange={e => setFormData({ ...formData, city: e.target.value })}
+                          placeholder="e.g. San Francisco"
+                          className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-brand transition-colors text-white"
+                        />
+                      </div>
+
+                      {/* Country select */}
+                      <div className="space-y-1.5 flex flex-col">
+                        <label className="text-xs font-semibold text-neutral-400 font-sans">
+                          Country {!formData.address.trim() && <span className="text-brand">*</span>}
+                        </label>
+                        <select
+                          required={!formData.address.trim()}
+                          value={formData.country}
+                          onChange={e => setFormData({ ...formData, country: e.target.value })}
+                          className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-brand transition-colors text-white cursor-pointer"
+                        >
+                          <option value="" className="bg-neutral-900 text-neutral-500">Select country...</option>
+                          {countryCodes.map((country, idx) => (
+                            <option key={idx} value={country.name} className="bg-neutral-900 text-white font-normal">
+                              {country.flag} {country.name}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     </div>
 
@@ -1107,16 +1287,13 @@ export default function BookView({ initialServiceName, onClose, isModal }: BookV
                                     key={slotIdx}
                                     type="button"
                                     onClick={() => setFormData({ ...formData, meetingTimeSlot: slotTime })}
-                                    className={`py-3 px-4 rounded-xl border text-xs font-bold transition-all text-center flex items-center justify-between ${
+                                    className={`py-3 px-4 rounded-xl border text-xs font-bold transition-all text-center cursor-pointer ${
                                       activeSlot
-                                        ? 'bg-brand border-transparent text-black shadow-lg'
-                                        : 'bg-neutral-950 border-neutral-800 text-neutral-350 hover:border-neutral-700'
+                                        ? 'bg-brand border-transparent text-black shadow-lg shadow-brand/10 font-extrabold'
+                                        : 'bg-neutral-950 border-neutral-800 text-neutral-300 hover:border-neutral-700'
                                     }`}
                                   >
                                     <span className="font-sans font-medium">{slotTime}</span>
-                                    <span className={`text-[10px] font-sans font-bold ${activeSlot ? 'text-black/80' : 'text-neutral-400'}`}>
-                                      {activeSlot ? '✓ Selected' : 'Reserve'}
-                                    </span>
                                   </button>
                                 );
                               })}
@@ -1162,7 +1339,9 @@ export default function BookView({ initialServiceName, onClose, isModal }: BookV
                         </div>
                         <div>
                           <span className="font-sans block text-[10px] font-bold text-neutral-400 mb-0.5">Address:</span>
-                          <span className="text-white font-semibold line-clamp-1">{formData.address}</span>
+                          <span className="text-white font-semibold line-clamp-1">
+                            {formData.address || (formData.city && formData.country ? `${formData.city}, ${formData.country}` : 'N/A')}
+                          </span>
                         </div>
                       </div>
 

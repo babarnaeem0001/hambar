@@ -108,9 +108,9 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
   ];
 
   const trustElements = [
-    { title: 'Transparent Communication', desc: 'No complex technical jargon. Clear status reports, plain-English metrics, and open codebase repositories from day one.', img: '/transparent communication.png' },
-    { title: 'Business-Focused Solutions', desc: 'We prioritize investments that yield directly measurable return on investments (ROI), rather than adopting expensive tech defaults.', img: '/business focused.png' },
-    { title: 'Long-Term Support', desc: 'We stay with your business long after deployment to host, maintain, secure, and incrementally scale your databases.', img: '/longterm support.png' },
+    { title: 'Open Communication', desc: 'No complex technical jargon. Clear status reports, plain-English metrics, and open codebase repositories from day one.', img: '/transparent communication.png' },
+    { title: 'Business-driven Solution', desc: 'We prioritize investments that yield directly measurable return on investments (ROI), rather than adopting expensive tech defaults.', img: '/business focused.png' },
+    { title: 'Long-term Support', desc: 'We stay with your business long after deployment to host, maintain, secure, and incrementally scale your databases.', img: '/longterm support.png' },
     { title: 'Strategic Planning', desc: 'We align raw technical blueprints precisely with your five-year corporate commercial growth and scaling targets.', img: '/strategic planning.png' }
   ];
 
@@ -144,7 +144,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                 </span>
               </h1>
               <p className="text-lg sm:text-xl text-neutral-300 leading-relaxed max-w-lg">
-                We help businesses attract more customers, streamline operations, implement AI solutions, build powerful software, and scale efficiently.
+                We help businesses to acquire more customers, optimize their process, implement AI technology, create robust software and scale easily
               </p>
               <div className="pt-8">
                 <Button
@@ -278,7 +278,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
       <section className="py-24 bg-neutral-50 border-y border-neutral-100 overflow-hidden" id="trust-elements">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
            <div className="text-center mb-16">
-             <h2 className="text-4xl font-extrabold tracking-tight text-black">Our Software Principles</h2>
+             <h2 className="text-4xl font-extrabold tracking-tight text-black">Our Principles</h2>
            </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12 mt-10">
             {trustElements.map((el, idx) => {
@@ -320,7 +320,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="text-3xl lg:text-4xl font-extrabold text-white tracking-tight">Our High-Demand Services</h2>
               <p className="text-neutral-400 mt-3 text-sm leading-relaxed">
-                Select any skill column or direct capability below to view details, strategic discovery timelines, and pricing estimates.
+                Click on any skill column or direct capabilities below for more information, timelines, and price estimates.
               </p>
             </div>
 
@@ -398,7 +398,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
             <CardBody className="bg-white relative group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-full max-w-[92vw] sm:max-w-[45rem] lg:max-w-[65rem] h-auto rounded-xl p-8 lg:p-16 border space-y-8 lg:space-y-12 mx-auto">
               <div className="max-w-2xl mx-auto text-center space-y-6">
                 <CardItem translateZ="50" className="text-4xl lg:text-5xl font-extrabold text-black dark:text-white leading-tight mx-auto">
-                  Why Growing Companies Partner with Us
+                  Why Growing Companies Partner with Us:
                 </CardItem>
               </div>
 
@@ -416,10 +416,10 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                     {/* Text Content elevated & styled */}
                     <div className="relative z-10 transition-transform duration-300 group-hover/item:-translate-y-2">
                       <h4 className="font-extrabold text-2xl text-white mb-3 group-hover/item:text-brand transition-colors tracking-tight">
-                        Outcome First Execution
+                        Execution Based On Outcome
                       </h4>
                       <p className="text-neutral-300 text-sm leading-relaxed">
-                        We measure success in hours saved, lead inquiry spikes, and secure database parameters.
+                        We gauge success based on time saved, inquiries generated, and locked-down database parameters.
                       </p>
                     </div>
                   </div>
@@ -437,10 +437,10 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                     {/* Text Content elevated & styled */}
                     <div className="relative z-10 transition-transform duration-300 group-hover/item:-translate-y-2">
                       <h4 className="font-extrabold text-2xl text-white mb-3 group-hover/item:text-brand transition-colors tracking-tight">
-                        Deep Technical Competency
+                        Technical Expertise
                       </h4>
                       <p className="text-neutral-300 text-sm leading-relaxed">
-                        Our teams perform actual code audits, implement sandboxed AI, and optimize cloud nodes.
+                        Our team conducts code audits, creates sandboxed AI, and optimizes cloud nodes.
                       </p>
                     </div>
                   </div>
@@ -458,10 +458,10 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                     {/* Text Content elevated & styled */}
                     <div className="relative z-10 transition-transform duration-300 group-hover/item:-translate-y-2">
                       <h4 className="font-extrabold text-2xl text-white mb-3 group-hover/item:text-brand transition-colors tracking-tight">
-                        Client & Asset Security
+                        Protection of Our Clients' Assets
                       </h4>
                       <p className="text-neutral-300 text-sm leading-relaxed">
-                        We draft software components that protect client files from public model leakage.
+                        We build software pieces to ensure that our client assets do not leak into the public models.
                       </p>
                     </div>
                   </div>
@@ -792,10 +792,10 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-12">
           <div className="max-w-3xl mx-auto space-y-4">
             <h2 className="text-4xl lg:text-5xl font-extrabold text-black tracking-tight leading-tight">
-              AI Adoption & Modern Cloud Transition
+              AI Implementation and Cloud Migration:
             </h2>
             <p className="text-neutral-500 text-sm md:text-base tracking-tight max-w-2xl mx-auto leading-normal">
-              Bridging legacy systems with advanced generative intelligence and secure cloud hosting.
+              Connecting your existing legacy system with generative AI and secure cloud hosting.
             </p>
           </div>
 
@@ -911,15 +911,15 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
              <h2 className="text-4xl font-extrabold text-black tracking-tight">Structured For Your Industry</h2>
-             <p className="text-neutral-600 mt-4 text-base leading-relaxed">We handle challenges across multiple corporate sectors.</p>
+             <p className="text-neutral-600 mt-4 text-base leading-relaxed">We solve issues in different industries.</p>
           </div>
 
           <Carousel3D items={[
-            { title: "Startups", desc: "Accelerating early-stage minimum viable products (MVPs) to satisfy strategic runway milestones.", img: "/startups.png" },
-            { title: "E-Commerce", desc: "Tuning checkout performance and customer retention pipelines for web consumer retail.", img: "/ecommerce.png" },
-            { title: "Small Businesses", desc: "Automating repetitive administrative spreadsheets to capture local buyer pipelines.", img: "/small business.png" },
-            { title: "Healthcare Providers", desc: "Implementing secure scheduling pathways and compliant portals.", img: "/healthcare providers.png" },
-            { title: "SaaS Platforms", desc: "Refactoring codebases and implementing microservices for scalable platforms.", img: "/saaas platforms.png" }
+            { title: "Startups", img: "/startups.png" },
+            { title: "E-Commerce", img: "/ecommerce.png" },
+            { title: "Small Businesses", img: "/small business.png" },
+            { title: "Healthcare Providers", img: "/healthcare providers.png" },
+            { title: "SaaS Platforms", img: "/saaas platforms.png" }
           ].map((ind, idx) => (
              <div 
                key={idx} 
@@ -941,12 +941,9 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
 
                {/* Text Content */}
                <div className="relative z-10 transition-transform duration-300 group-hover:translate-y-[-4px] flex flex-col items-center justify-center">
-                 <h3 className="font-extrabold text-4xl sm:text-5xl text-white mb-4 group-hover:text-brand transition-colors tracking-tight">
+                 <h3 className="font-extrabold text-5xl sm:text-6xl text-white mb-4 group-hover:text-brand transition-colors tracking-tight">
                    {ind.title}
                  </h3>
-                 <p className="text-neutral-300 text-sm sm:text-base leading-relaxed max-w-md mx-auto">
-                   {ind.desc}
-                 </p>
                </div>
              </div>
           ))} autoPlay={false} />
@@ -956,7 +953,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
               onClick={async () => { await new Promise(r => setTimeout(r, 600)); onPageChange('industries'); }}
               className="bg-black text-white hover:bg-neutral-800 rounded-full font-bold px-8 py-6 ring-black mx-auto"
             >
-              View Strategic Industry Profiles
+              See Industry Profiles
             </Button>
           </div>
         </div>
@@ -966,7 +963,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
       <section className="py-16 bg-neutral-50 border-y border-neutral-100 overflow-hidden" id="our-process-section">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-8">
-            <h2 className="text-3xl font-extrabold text-slate-950 tracking-tight mt-1">Our Structured 4-Step Process</h2>
+            <h2 className="text-3xl font-extrabold text-slate-950 tracking-tight mt-1">Our 4-Step Structured Approach</h2>
           </div>
 
           <Carousel items={processSteps.map((p, i) => {
@@ -1054,7 +1051,6 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
             <div className="lg:col-span-5 space-y-6">
               <h2 className="text-5xl font-extrabold tracking-tight leading-tight text-white">Frequently Asked Questions</h2>
-              <p className="text-neutral-400 text-lg">Clear, transparent answers about our core parameters.</p>
             </div>
             <div className="lg:col-span-7 space-y-4">
               {homeFaqs.map((faq, index) => {
@@ -1115,7 +1111,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
             </SquigglyText>
           </h2>
           <p className="text-neutral-400 text-lg max-w-xl mx-auto leading-relaxed">
-            Initiate specialized service activation. Acquire flat-rate milestone engineering directly with our co-founders.
+            Start your specialized services. Get flat-rates milestones engineering directly from our co-founders.
           </p>
           <div className="flex flex-col sm:flex-row justify-center items-center gap-6 pt-6">
             <Button

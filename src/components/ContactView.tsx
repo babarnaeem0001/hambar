@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MessageSquare, Send, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Mail, Phone, MessageSquare, Send, CheckCircle2, AlertCircle, MapPin } from 'lucide-react';
 import { adminStore } from '../lib/admin-store';
 
 export default function ContactView() {
@@ -10,11 +10,115 @@ export default function ContactView() {
     phone: '',
     serviceInterested: 'AI Solutions',
     budgetRange: '$5,000 - $15,000',
-    details: ''
+    details: '',
+    address: '',
+    city: '',
+    country: ''
   });
 
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+
+  const [addressSuggestions, setAddressSuggestions] = useState<string[]>([]);
+  const [showAddressSuggestions, setShowAddressSuggestions] = useState(false);
+  const [isMapsLoaded, setIsMapsLoaded] = useState(false);
+
+  React.useEffect(() => {
+    const apiKey = (process.env.GOOGLE_MAPS_PLATFORM_KEY) || '';
+    if (!apiKey) return;
+    if ((window as any).google && (window as any).google.maps) {
+      setIsMapsLoaded(true);
+      return;
+    }
+    const existingScript = document.getElementById('google-maps-api-script');
+    if (existingScript) {
+      existingScript.addEventListener('load', () => setIsMapsLoaded(true));
+      return;
+    }
+    const script = document.createElement('script');
+    script.id = 'google-maps-api-script';
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.addEventListener('load', () => setIsMapsLoaded(true));
+    document.head.appendChild(script);
+  }, []);
+
+  const REAL_ADDRESS_FALLBACKS = [
+    "1600 Amphitheatre Pkwy, Mountain View, CA 94043",
+    "1 Infinite Loop, Cupertino, CA 95014",
+    "One Hacker Way, Menlo Park, CA 94025",
+    "One Microsoft Way, Redmond, WA 98052",
+    "350 5th Ave, New York, NY 10118",
+    "601 Townsend St, San Francisco, CA 94103",
+    "111 8th Ave, New York, NY 10011",
+    "410 Terry Ave N, Seattle, WA 98109",
+    "100 Bovet Rd, San Mateo, CA 94402",
+    "530 Lytton Ave, Palo Alto, CA 94301"
+  ];
+
+  const countryCodes = [
+    { code: '+1', name: 'United States', flag: '🇺🇸' },
+    { code: '+1', name: 'Canada', flag: '🇨🇦' },
+    { code: '+44', name: 'United Kingdom', flag: '🇬🇧' },
+    { code: '+61', name: 'Australia', flag: '🇦🇺' },
+    { code: '+64', name: 'New Zealand', flag: '🇳🇿' },
+    { code: '+91', name: 'India', flag: '🇮🇳' },
+    { code: '+92', name: 'Pakistan', flag: '🇵🇰' },
+    { code: '+971', name: 'United Arab Emirates', flag: '🇦🇪' },
+    { code: '+81', name: 'Japan', flag: '🇯🇵' },
+    { code: '+49', name: 'Germany', flag: '🇩🇪' },
+    { code: '+33', name: 'France', flag: '🇫🇷' },
+    { code: '+39', name: 'Italy', flag: '🇮🇹' },
+    { code: '+34', name: 'Spain', flag: '🇪🇸' },
+    { code: '+86', name: 'China', flag: '🇨🇳' },
+    { code: '+55', name: 'Brazil', flag: '🇧🇷' },
+    { code: '+52', name: 'Mexico', flag: '🇲🇽' },
+    { code: '+7', name: 'Russia', flag: '🇷🇺' },
+    { code: '+27', name: 'South Africa', flag: '🇿🇦' },
+    { code: '+82', name: 'South Korea', flag: '🇰🇷' },
+    { code: '+65', name: 'Singapore', flag: '🇸🇬' },
+  ];
+
+  const fetchAddressPredictions = (text: string) => {
+    if (!text || text.trim().length < 3) {
+      setAddressSuggestions([]);
+      return;
+    }
+
+    if (isMapsLoaded && (window as any).google?.maps?.places?.AutocompleteService) {
+      try {
+        const service = new (window as any).google.maps.places.AutocompleteService();
+        service.getPlacePredictions(
+          { input: text, types: ['address'] },
+          (predictions: any, status: any) => {
+            if (status === 'OK' && predictions) {
+              setAddressSuggestions(predictions.map((p: any) => p.description));
+            } else {
+              const filtered = REAL_ADDRESS_FALLBACKS.filter(addr => 
+                addr.toLowerCase().includes(text.toLowerCase())
+              );
+              setAddressSuggestions(filtered);
+            }
+          }
+        );
+        return;
+      } catch (e) {
+        console.warn('AutocompleteService error:', e);
+      }
+    }
+
+    const filtered = REAL_ADDRESS_FALLBACKS.filter(addr => 
+      addr.toLowerCase().includes(text.toLowerCase())
+    );
+    setAddressSuggestions(filtered);
+  };
+
+  const handleAddressChange = (val: string) => {
+    setFormData(prev => ({ ...prev, address: val }));
+    fetchAddressPredictions(val);
+    setShowAddressSuggestions(true);
+  };
 
   const servicesList = [
     'AI Solutions & Strategy',
@@ -45,8 +149,18 @@ export default function ContactView() {
       setError('Please fill out all required fields (Name, Email, and Project Details).');
       return;
     }
+
+    const hasFullAddress = formData.address.trim() !== '';
+    const hasCityAndCountry = formData.city.trim() !== '' && formData.country.trim() !== '';
+    if (!hasFullAddress && !hasCityAndCountry) {
+      setError('Please enter your Postal Address, or both City and Country.');
+      return;
+    }
+
     setError('');
     
+    const computedAddress = formData.address.trim() || (formData.city && formData.country ? `${formData.city.trim()}, ${formData.country.trim()}` : '');
+
     // Persist to adminStore
     adminStore.addSubmission({
       type: 'contact',
@@ -56,7 +170,8 @@ export default function ContactView() {
       companyName: formData.companyName || undefined,
       serviceInterested: formData.serviceInterested,
       budgetRange: formData.budgetRange,
-      details: formData.details
+      details: formData.details,
+      address: computedAddress || undefined
     });
 
     setSubmitted(true);
@@ -70,7 +185,10 @@ export default function ContactView() {
       phone: '',
       serviceInterested: 'AI Solutions',
       budgetRange: '$5,000 - $15,000',
-      details: ''
+      details: '',
+      address: '',
+      city: '',
+      country: ''
     });
     setSubmitted(false);
   };
@@ -165,6 +283,7 @@ export default function ContactView() {
                     <p><strong>Company Name:</strong> {formData.companyName || 'Not Specified'}</p>
                     <p><strong>Proposed Budget Range:</strong> {formData.budgetRange}</p>
                     <p><strong>Phone:</strong> {formData.phone || 'Not Specified'}</p>
+                    <p><strong>Postal Address:</strong> {formData.address || (formData.city && formData.country ? `${formData.city}, ${formData.country}` : 'Not Specified')}</p>
                   </div>
                   <div className="pt-4">
                     <button
@@ -264,6 +383,83 @@ export default function ContactView() {
                           <option key={i} value={b}>{b}</option>
                         ))}
                       </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 pt-1">
+                    <div className="space-y-1 relative">
+                      <label className="block text-xs font-semibold text-slate-700">
+                        Operational / Postal Address {!formData.city.trim() && !formData.country.trim() && <span className="text-red-500">*</span>}
+                      </label>
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <input 
+                          type="text"
+                          required={!formData.city.trim() && !formData.country.trim()}
+                          value={formData.address}
+                          onChange={e => handleAddressChange(e.target.value)}
+                          onFocus={() => setShowAddressSuggestions(true)}
+                          onBlur={() => setTimeout(() => setShowAddressSuggestions(false), 200)}
+                          placeholder="Type or enter your address..."
+                          className="w-full bg-white border border-slate-300 rounded pl-10 pr-4 py-2 text-xs focus:ring-1 focus:ring-slate-950 focus:outline-none"
+                        />
+                      </div>
+                      
+                      {showAddressSuggestions && addressSuggestions.length > 0 && (
+                        <div className="absolute z-20 w-full bg-white border border-slate-200 mt-1 rounded shadow-lg max-h-48 overflow-y-auto">
+                          {addressSuggestions.map((suggestion, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => {
+                                setFormData({ ...formData, address: suggestion });
+                                setAddressSuggestions([]);
+                                setShowAddressSuggestions(false);
+                              }}
+                              className="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-b-0 cursor-pointer block"
+                            >
+                              {suggestion}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* City input */}
+                      <div className="space-y-1 flex flex-col">
+                        <label className="text-xs font-semibold text-slate-700">
+                          City {!formData.address.trim() && <span className="text-red-500">*</span>}
+                        </label>
+                        <input 
+                          type="text"
+                          required={!formData.address.trim()}
+                          value={formData.city}
+                          onChange={e => setFormData({ ...formData, city: e.target.value })}
+                          placeholder="e.g. San Francisco"
+                          className="w-full bg-white border border-slate-300 rounded px-3 py-2 text-xs focus:ring-1 focus:ring-slate-950 focus:outline-none text-slate-800"
+                        />
+                      </div>
+
+                      {/* Country select */}
+                      <div className="space-y-1 flex flex-col">
+                        <label className="text-xs font-semibold text-slate-700">
+                          Country {!formData.address.trim() && <span className="text-red-500">*</span>}
+                        </label>
+                        <select
+                          required={!formData.address.trim()}
+                          value={formData.country}
+                          onChange={e => setFormData({ ...formData, country: e.target.value })}
+                          className="w-full bg-white border border-slate-300 rounded px-3 py-2 text-xs focus:ring-1 focus:ring-slate-950 focus:outline-none text-slate-800 cursor-pointer"
+                        >
+                          <option value="" className="text-slate-400">Select country...</option>
+                          {countryCodes.map((country, idx) => (
+                            <option key={idx} value={country.name} className="text-slate-800">
+                              {country.flag} {country.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
                   </div>
 

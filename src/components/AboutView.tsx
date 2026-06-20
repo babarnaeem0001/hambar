@@ -33,9 +33,9 @@ export default function AboutView({ onPageChange, onOpenBookingModal }: AboutVie
       {/* Hero Header */}
       <section className="bg-slate-50 py-16 border-b border-slate-100" id="about-hero">
         <div className="max-w-4xl mx-auto px-4 text-center space-y-4">
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">Our Story & Core Values</h1>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">Our Origin & Core Values</h1>
           <p className="text-slate-600 text-sm max-w-2xl mx-auto leading-relaxed">
-            Hambar is an elite software engineering and custom technology solutions firm designed to transition companies safely and securely into the high-performance digital era.
+            Hambar is a premium software engineering and technology development company aimed at transferring companies to the digital era safely and securely.
           </p>
         </div>
       </section>
@@ -45,12 +45,12 @@ export default function AboutView({ onPageChange, onOpenBookingModal }: AboutVie
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <h2 className="text-2xl font-extrabold text-slate-950 tracking-tight">Founded on Practical Technology Execution</h2>
+              <h2 className="text-2xl font-extrabold text-slate-950 tracking-tight">Originating From the Practice of Technology Implementation</h2>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Hambar was founded by **Hamid Saleem** and **Babar Naeem** to help businesses build, secure, and scale modern software products, AI workflows, and high-performance speed platforms.
+                Hambar was founded by <strong>Hamid Saleem</strong> and <strong>Babar Naeem</strong> for helping companies implement their business goals through development of secure, scalable and modern software products and speed platforms.
               </p>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Before launching Hambar, Hamid and Babar recognized a recurring issue: business managers receive slide decks and abstract diagrams, but lack production-ready, custom-engineered source code. They structured Hambar as a dedicated developers ecosystem that translates technical specifications into robust, durable corporate systems.
+                Before starting the work at Hambar, Hamid and Babar saw an emerging problem – managers got slide-decks and diagrams, but no production-ready and custom-developed source code. So, Hambar was created as an ecosystem of developers which can translate your technical specifications into robust corporate systems.
               </p>
               <div className="pt-2">
                 <button
@@ -63,25 +63,25 @@ export default function AboutView({ onPageChange, onOpenBookingModal }: AboutVie
                   }}
                   className="inline-flex items-center gap-1.5 px-4.5 py-2.5 bg-slate-950 hover:bg-slate-800 text-white rounded text-xs font-semibold shadow transition-all cursor-pointer"
                 >
-                  Start Project with Founders
+                  Start Project With the Founders
                 </button>
               </div>
             </div>
 
             <div className="bg-slate-50 p-6 rounded-lg border border-slate-100 space-y-4">
-              <h3 className="font-bold text-slate-950 text-sm uppercase tracking-wide">Key Benchmarks</h3>
+              <h3 className="font-bold text-slate-950 text-sm uppercase tracking-wide">Key Metrics</h3>
               <ul className="space-y-3.5 text-xs text-slate-600">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 size={16} className="text-slate-900 mt-0.5 shrink-0" />
-                  <span><strong>100% IP Handover:</strong> Your firm retains complete source code ownership.</span>
+                  <span><strong>100% IP transfer:</strong> your company will own all the source code.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 size={16} className="text-slate-900 mt-0.5 shrink-0" />
-                  <span><strong>No Tech-Larping:</strong> We avoid vanity indicators and status logs to focus on real ROI.</span>
+                  <span><strong>No tech-larping:</strong> we do not use any vanity metrics or logs but only focus on ROI.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 size={16} className="text-slate-900 mt-0.5 shrink-0" />
-                  <span><strong>Secure Sandboxes:</strong> All customer data pipelines run isolated.</span>
+                  <span><strong>Secure sandboxes:</strong> all data pipelines of customers operate isolated.</span>
                 </li>
               </ul>
             </div>
@@ -90,8 +90,8 @@ export default function AboutView({ onPageChange, onOpenBookingModal }: AboutVie
           {/* Founders Profile Cards */}
           <div className="space-y-8">
             <div className="text-center">
-              <h3 className="text-xl font-extrabold text-slate-950 tracking-tight">Co-Founder Profiles</h3>
-              <p className="text-xs text-slate-500 mt-1">Direct technology leadership guiding every milestone.</p>
+              <h3 className="text-xl font-extrabold text-slate-950 tracking-tight">Co-founder profiles</h3>
+              <p className="text-xs text-slate-500 mt-1">Technology leaders working on each and every milestone.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto" id="founders-grid">
@@ -111,7 +111,7 @@ export default function AboutView({ onPageChange, onOpenBookingModal }: AboutVie
                     </div>
                   </div>
                   <p className="text-slate-600 text-xs leading-relaxed">
-                    Hamid oversees product engineering, technology alignment, and systems architecture. He works directly with stakeholders to define technical specifications, build high-performance software systems, and drive stable digital platform integrations.
+                    Hamid is responsible for product engineering, technology alignment, and systems architecture. He collaborates directly with the stakeholders to create technical requirements and develop high performance software systems.
                   </p>
                 </div>
               </div>
@@ -132,7 +132,7 @@ export default function AboutView({ onPageChange, onOpenBookingModal }: AboutVie
                     </div>
                   </div>
                   <p className="text-slate-600 text-xs leading-relaxed">
-                    Babar oversees product engineering, technology alignment, and systems architecture. He works directly with stakeholders to define technical specifications, build high-performance software systems, and drive stable digital platform integrations.
+                    Babar is responsible for product engineering, technology alignment, and systems architecture. He collaborates directly with the stakeholders to create technical requirements and develop high performance software systems.
                   </p>
                 </div>
               </div>
@@ -147,7 +147,7 @@ export default function AboutView({ onPageChange, onOpenBookingModal }: AboutVie
           <div className="text-center max-w-xl mx-auto mb-10">
             <h2 className="text-3xl font-extrabold text-black tracking-tight">Our Core Values</h2>
             <p className="text-sm text-neutral-600 mt-2">
-              Five central metrics guiding our daily client operations.
+              Five metrics which define us every day while operating with clients.
             </p>
           </div>
 

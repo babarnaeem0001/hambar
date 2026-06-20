@@ -59,3 +59,17 @@ CREATE TABLE IF NOT EXISTS public.admins (
 ALTER TABLE public.articles DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.submissions DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.admins DISABLE ROW LEVEL SECURITY;
+
+-- Fallback policies in case Supabase re-enables RLS by default or fails to disable it
+DROP POLICY IF EXISTS "Allow public read" ON public.admins;
+DROP POLICY IF EXISTS "Allow authed insert" ON public.admins;
+DROP POLICY IF EXISTS "Allow authed update" ON public.admins;
+DROP POLICY IF EXISTS "Allow authed delete" ON public.admins;
+
+DROP POLICY IF EXISTS "Allow public read of admins" ON public.admins;
+DROP POLICY IF EXISTS "Allow users to upsert their own admin profile" ON public.admins;
+
+CREATE POLICY "Allow public read" ON public.admins FOR SELECT USING (true);
+CREATE POLICY "Allow authed insert" ON public.admins FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow authed update" ON public.admins FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Allow authed delete" ON public.admins FOR DELETE USING (true);

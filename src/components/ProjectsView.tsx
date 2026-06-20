@@ -60,7 +60,7 @@ export default function ProjectsView({ onPageChange }: ProjectsViewProps) {
         <div className="max-w-4xl mx-auto px-4 text-center space-y-6">
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight">Recent Projects</h1>
           <p className="text-neutral-500 text-sm max-w-2xl mx-auto leading-relaxed">
-            We build scalable, impactful digital systems for growing companies. Explore our portfolio of custom software, AI automation loops, and high-performance applications.
+            We design scalable solutions that make a difference in the digital world for emerging firms. Discover our projects in custom software, AI automation loops, and high performance applications.
           </p>
         </div>
       </section>
