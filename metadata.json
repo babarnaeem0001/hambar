@@ -1,6 +1,6 @@
 {
-  "name": "Hambar Consulting",
-  "description": "Technology, AI & Business Consulting for Growing Companies",
+  "name": "Hambar",
+  "description": "Technology AI and Business Consulting for Growing Companies",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

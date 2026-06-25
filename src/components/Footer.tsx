@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivePage } from '../types';
-import { Mail, Phone, Clock, ArrowRight, Linkedin, Twitter, MessageSquare } from 'lucide-react';
+import { Mail, Phone, Clock, ArrowRight, Linkedin } from 'lucide-react';
 
 interface FooterProps {
   onPageChange: (page: ActivePage, serviceSlug?: string) => void;
@@ -38,14 +38,14 @@ export default function Footer({ onPageChange }: FooterProps) {
             </div>
             {/* Socials */}
             <div className="flex items-center gap-3 pt-2">
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="p-2 bg-neutral-900 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded transition-colors" aria-label="LinkedIn Profile">
+              <a href="https://www.linkedin.com/company/hambarcouk/" target="_blank" rel="noopener noreferrer" className="p-2 bg-neutral-900 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded transition-colors" aria-label="LinkedIn Profile">
                 <Linkedin size={16} />
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="p-2 bg-neutral-900 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded transition-colors" aria-label="Twitter Profile">
-                <Twitter size={16} />
+              <a href="https://x.com/hambarcouk" target="_blank" rel="noopener noreferrer" className="p-2 bg-neutral-900 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded transition-colors" aria-label="X (Twitter) Profile">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4l11.733 16h4.267l-11.733 -16z"></path><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"></path></svg>
               </a>
-              <a href="https://wa.me/something" target="_blank" rel="noopener noreferrer" className="p-2 bg-neutral-900 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded transition-colors" aria-label="WhatsApp Contact">
-                <MessageSquare size={16} />
+              <a href="https://wa.me/923356924128" target="_blank" rel="noopener noreferrer" className="p-2 bg-neutral-900 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded transition-colors" aria-label="WhatsApp Contact">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
               </a>
             </div>
           </div>
@@ -136,18 +136,29 @@ export default function Footer({ onPageChange }: FooterProps) {
               <li className="flex items-start gap-2.5">
                 <Mail size={16} className="text-neutral-500 mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-xs text-neutral-500">Discovery Call Email</p>
-                  <a href="mailto:info@hbdigital.com" className="hover:text-white transition-colors break-all">
-                    info@hbdigital.com
+                  <p className="text-xs text-neutral-500">Email</p>
+                  <a href="mailto:hambar0011@gmail.com" className="hover:text-white transition-colors break-all">
+                    hambar0011@gmail.com
                   </a>
                 </div>
               </li>
               <li className="flex items-start gap-2.5">
                 <Phone size={16} className="text-neutral-500 mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-xs text-neutral-500">Phone & WhatsApp</p>
-                  <a href="https://wa.me/123456789" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
-                    +1 (234) 567-8900
+                  <p className="text-xs text-neutral-500">Phone</p>
+                  <a href="tel:0517245973" className="hover:text-white transition-colors">
+                    0517245973
+                  </a>
+                </div>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <span className="text-neutral-500 mt-0.5 shrink-0 flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                </span>
+                <div>
+                  <p className="text-xs text-neutral-500">WhatsApp & Phone</p>
+                  <a href="https://wa.me/923356924128" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                    923356924128
                   </a>
                 </div>
               </li>

@@ -221,10 +221,9 @@ export default function ContactView() {
                 </p>
               </div>
 
-              {/* Direct channels */}
               <div className="space-y-4">
                 <a 
-                  href="https://wa.me/123456789?text=Hello%20HB%20Digital%20Solutions,%20I%20would%20like%20to%20discuss%20a%20project." 
+                  href="https://wa.me/923356924128?text=Hello%20Hambar,%20I%20would%20like%20to%20discuss%20a%20project." 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-lg group transition-all"
@@ -245,7 +244,7 @@ export default function ContactView() {
                   </div>
                   <div>
                     <h4 className="font-bold text-slate-950 text-sm">General Inquiries</h4>
-                    <p className="text-slate-600 text-xs mt-0.5">info@hbdigital.com</p>
+                    <p className="text-slate-600 text-xs mt-0.5">hambar0011@gmail.com</p>
                   </div>
                 </div>
 
@@ -254,8 +253,18 @@ export default function ContactView() {
                     <Phone size={20} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-950 text-sm">Call & Messaging HQ</h4>
-                    <p className="text-slate-600 text-xs mt-0.5">+1 (234) 567-8900</p>
+                    <h4 className="font-bold text-slate-950 text-sm">Call</h4>
+                    <p className="text-slate-600 text-xs mt-0.5">0517245973</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-100 rounded-lg">
+                  <div className="p-3 bg-slate-900 text-white rounded">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-950 text-sm">WhatsApp & Phone</h4>
+                    <p className="text-slate-600 text-xs mt-0.5">923356924128</p>
                   </div>
                 </div>
               </div>
