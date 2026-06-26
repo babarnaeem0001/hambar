@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { Suspense, lazy, useState, useEffect } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import HomeView from './components/HomeView';
-import ServicesView from './components/ServicesView';
-import ProjectsView from './components/ProjectsView';
-import MagazineView from './components/MagazineView';
-import AboutView from './components/AboutView';
-import ContactView from './components/ContactView';
-import BookView from './components/BookView';
-import ServiceDetailView from './components/ServiceDetailView';
-import AdminView from './components/AdminView';
 import { ActivePage } from './types';
 import { majorServicesDetails, serviceCategories } from './data';
 import { applySeo } from './lib/seo';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+
+const HomeView = lazy(() => import('./components/HomeView'));
+const ServicesView = lazy(() => import('./components/ServicesView'));
+const ProjectsView = lazy(() => import('./components/ProjectsView'));
+const MagazineView = lazy(() => import('./components/MagazineView'));
+const AboutView = lazy(() => import('./components/AboutView'));
+const ContactView = lazy(() => import('./components/ContactView'));
+const BookView = lazy(() => import('./components/BookView'));
+const ServiceDetailView = lazy(() => import('./components/ServiceDetailView'));
+const AdminView = lazy(() => import('./components/AdminView'));
 
 const pagePaths: Partial<Record<ActivePage, string>> = {
   home: '/',
@@ -144,7 +145,9 @@ export default function App() {
 
       {/* Main View Area */}
       <main className="flex-grow pt-[72px] sm:pt-[96px] w-full max-w-7xl mx-auto" id="main-content-flow">
-        {renderActiveView()}
+        <Suspense fallback={<div className="min-h-[60vh] bg-white" aria-label="Loading page" />}>
+          {renderActiveView()}
+        </Suspense>
       </main>
 
       {/* Global Structured Footer */}
@@ -171,11 +174,13 @@ export default function App() {
               </button>
 
               <div className="p-1">
-                <BookView 
-                  initialServiceName={bookingModal.serviceName} 
-                  onClose={() => setBookingModal({ isOpen: false })} 
-                  isModal={true} 
-                />
+                <Suspense fallback={<div className="min-h-[360px] bg-[#090909] rounded-2xl" aria-label="Loading booking form" />}>
+                  <BookView
+                    initialServiceName={bookingModal.serviceName}
+                    onClose={() => setBookingModal({ isOpen: false })}
+                    isModal={true}
+                  />
+                </Suspense>
               </div>
             </motion.div>
           </div>

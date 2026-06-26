@@ -104,6 +104,8 @@ export default function AboutView({ onPageChange, onOpenBookingModal }: AboutVie
                       alt="Hamid Saleem, Hambar co-founder"
                       className="w-16 h-16 rounded-full border border-slate-200 object-cover"
                       referrerPolicy="no-referrer"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <div>
                       <h4 className="font-bold text-slate-950 text-base leading-tight">Hamid Saleem</h4>
@@ -125,6 +127,8 @@ export default function AboutView({ onPageChange, onOpenBookingModal }: AboutVie
                       alt="Babar Naeem, Hambar co-founder"
                       className="w-16 h-16 rounded-full border border-slate-200 object-cover"
                       referrerPolicy="no-referrer"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <div>
                       <h4 className="font-bold text-slate-950 text-base leading-tight">Babar Naeem</h4>

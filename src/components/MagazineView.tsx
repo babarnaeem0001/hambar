@@ -141,6 +141,8 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
                     src={activeArticle.imageUrl} 
                     alt={`Cover image for ${activeArticle.title}`} 
                     className="w-full h-full object-cover" 
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               )}
@@ -148,7 +150,7 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
               {/* Author & Stats bar */}
               <div className="flex flex-wrap items-center justify-between gap-4 py-3 border-y border-slate-100 text-xs mt-4">
                 <div className="flex items-center gap-2.5">
-                  <img src={activeArticle.author.avatar} alt={`${activeArticle.author.name}, ${activeArticle.author.role}`} className="w-8 h-8 rounded-full border border-slate-200" referrerPolicy="no-referrer" />
+                  <img src={activeArticle.author.avatar} alt={`${activeArticle.author.name}, ${activeArticle.author.role}`} className="w-8 h-8 rounded-full border border-slate-200" referrerPolicy="no-referrer" loading="lazy" decoding="async" />
                   <div>
                     <h4 className="font-bold text-slate-950 leading-tight">{activeArticle.author.name}</h4>
                     <p className="text-slate-500 text-[9px] leading-tight mt-0.5">{activeArticle.author.role}</p>
@@ -392,6 +394,8 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
                                 src={art.imageUrl} 
                                 alt={`Cover image for ${art.title}`} 
                                 className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-500" 
+                                loading="lazy"
+                                decoding="async"
                               />
                             ) : (
                               <div className="flex flex-col items-center justify-center text-neutral-300 gap-1.5">

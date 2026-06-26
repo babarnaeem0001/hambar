@@ -16,6 +16,8 @@ export default function ProjectsView({ onPageChange }: ProjectsViewProps) {
           src={proj.image} 
           alt={`${proj.title} project for ${proj.client}`}
           className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
+          decoding="async"
         />
         <div className="absolute inset-0 bg-neutral-900/10 mix-blend-multiply" />
       </div>

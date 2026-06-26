@@ -172,6 +172,8 @@ export default function Header({ activePage, onPageChange, onOpenBookingModal }:
                               alt={articles[0]?.title ? `Cover image for ${articles[0].title}` : "Hambar strategic brief cover for business technology insights"} 
                               className="w-full h-full object-cover transition-transform duration-500 group-hover/bcard:scale-105"
                               referrerPolicy="no-referrer"
+                              loading="lazy"
+                              decoding="async"
                             />
                             {/* Category Badge element overlay if exists */}
                             {articles[0]?.category && (

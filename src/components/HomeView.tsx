@@ -7,7 +7,6 @@ import {
 } from 'lucide-react';
 import { processSteps, businessResults, serviceCategories, articles as initialArticles } from '../data';
 import { adminStore } from '../lib/admin-store';
-import Globe3DDemo from './3d-globe-demo';
 import { PinContainer } from './ui/3d-pin';
 import { AnimatedTestimonials } from './ui/animated-testimonials';
 import { Carousel, Card } from './ui/apple-cards-carousel';
@@ -26,6 +25,8 @@ import SlideInButton from './ui/SlideInButton';
 import CircleExpandButton from './ui/CircleExpandButton';
 import { motion, AnimatePresence } from 'motion/react';
 
+const Globe3DDemo = React.lazy(() => import('./3d-globe-demo'));
+
 interface HomeViewProps {
   onPageChange: (page: ActivePage, serviceSlug?: string) => void;
   onOpenBookingModal?: (serviceName?: string) => void;
@@ -33,6 +34,7 @@ interface HomeViewProps {
 
 export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewProps) {
   const [articles, setArticles] = useState<any[]>([]);
+  const [showDesktopGlobe, setShowDesktopGlobe] = useState(false);
 
   useEffect(() => {
     const loadContent = async () => {
@@ -44,6 +46,18 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
     window.addEventListener('admin_articles_updated', handleUpdate);
     return () => {
       window.removeEventListener('admin_articles_updated', handleUpdate);
+    };
+  }, []);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(min-width: 1024px)');
+    const updateDesktopGlobe = () => setShowDesktopGlobe(mediaQuery.matches);
+
+    updateDesktopGlobe();
+    mediaQuery.addEventListener('change', updateDesktopGlobe);
+
+    return () => {
+      mediaQuery.removeEventListener('change', updateDesktopGlobe);
     };
   }, []);
 
@@ -133,6 +147,8 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                   alt="Hambar technology, AI, and software services" 
                   className="h-11 sm:h-16 lg:h-24 w-auto object-contain select-none pointer-events-none self-start ml-0 sm:-ml-0.5 lg:-ml-1 -mb-1 sm:-mb-2 lg:-mb-3" 
                   referrerPolicy="no-referrer"
+                  decoding="async"
+                  fetchPriority="high"
                 />
                 <span className="text-xl sm:text-2xl lg:text-5xl font-bold text-neutral-300 flex items-center gap-2 flex-nowrap whitespace-nowrap pt-0 mt-0">
                   for
@@ -159,8 +175,12 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
               </div>
             </div>
 
-            <div className="relative h-[400px] lg:h-[600px] flex items-center justify-center opacity-80 mix-blend-screen pointer-events-none sm:pointer-events-auto">
-               <Globe3DDemo />
+            <div className="relative hidden lg:flex h-[400px] lg:h-[600px] items-center justify-center opacity-80 mix-blend-screen pointer-events-none sm:pointer-events-auto">
+              {showDesktopGlobe && (
+                <React.Suspense fallback={<div className="h-[420px] w-full" aria-label="Loading interactive globe" />}>
+                  <Globe3DDemo />
+                </React.Suspense>
+              )}
             </div>
 
           </div>
@@ -235,6 +255,8 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                             src={item.image}
                             alt={`${item.name}, ${item.role}`}
                             referrerPolicy="no-referrer"
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover rounded-[2rem]"
                           />
                           {item.showPlayButton && (
@@ -294,6 +316,8 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                            src={el.img} 
                            alt={`${el.title} principle at Hambar`} 
                            referrerPolicy="no-referrer"
+                           loading="lazy"
+                           decoding="async"
                            className="w-full h-full object-cover rounded-xl duration-500 hover:scale-105" 
                          />
                        </div>
@@ -410,6 +434,8 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                       src="/outcome first.png"
                       alt="Outcome-focused software and AI delivery by Hambar"
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover/item:scale-105"
+                      loading="lazy"
+                      decoding="async"
                     />
                     {/* Premium Radial Dark Overlays to ensure great contrast and readability */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/75 to-black/20 transition-opacity duration-300 group-hover/item:opacity-90" />
@@ -432,6 +458,8 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                       src="/deep technical.png"
                       alt="Deep technical software engineering and cloud architecture expertise"
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover/item:scale-105"
+                      loading="lazy"
+                      decoding="async"
                     />
                     {/* Premium Overlays */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/75 to-black/20 transition-opacity duration-300 group-hover/item:opacity-90" />
@@ -454,6 +482,8 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                       src="/client asset.png"
                       alt="Secure client asset protection for software and AI systems"
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover/item:scale-105"
+                      loading="lazy"
+                      decoding="async"
                     />
                     {/* Premium Overlays */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/75 to-black/20 transition-opacity duration-300 group-hover/item:opacity-90" />
@@ -933,6 +963,8 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                  src={ind.img} 
                  alt={`${ind.title} technology solutions by Hambar`}
                  referrerPolicy="no-referrer"
+                 loading="lazy"
+                 decoding="async"
                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                />
                
@@ -1020,7 +1052,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
             {articles.map((art) => (
               <div key={art.id} className="bg-black/60 backdrop-blur-md rounded-2xl border border-neutral-800/50 overflow-hidden flex flex-col justify-between hover:border-neutral-700 transition-colors z-20">
                 {art.imageUrl && (
-                  <img src={art.imageUrl} alt={`Cover image for ${art.title}`} className="w-full h-40 object-cover cursor-pointer hover:opacity-90 transition-opacity" onClick={() => onPageChange('magazine')} />
+                  <img src={art.imageUrl} alt={`Cover image for ${art.title}`} className="w-full h-40 object-cover cursor-pointer hover:opacity-90 transition-opacity" loading="lazy" decoding="async" onClick={() => onPageChange('magazine')} />
                 )}
                 <div className="p-6 space-y-4">
                   <div className="flex justify-between items-center text-[10px] font-mono text-neutral-400">
@@ -1034,7 +1066,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                 </div>
                 <div className="p-6 pt-0 border-t border-neutral-800/50 flex items-center justify-between mt-4">
                   <div className="flex items-center gap-3">
-                    <img src={art.author.avatar} alt={`${art.author.name}, ${art.author.role}`} className="w-8 h-8 rounded-full" referrerPolicy="no-referrer" />
+                    <img src={art.author.avatar} alt={`${art.author.name}, ${art.author.role}`} className="w-8 h-8 rounded-full" referrerPolicy="no-referrer" loading="lazy" decoding="async" />
                     <div>
                       <p className="text-xs font-bold text-neutral-200 leading-none">{art.author.name}</p>
                       <p className="text-[10px] text-neutral-500 leading-none mt-1">{art.author.role}</p>
@@ -1165,6 +1197,8 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                   src={trustElements[selectedPrinciple].img}
                   alt={`${trustElements[selectedPrinciple].title} principle at Hambar`}
                   referrerPolicy="no-referrer"
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
                 <button 
