@@ -27,7 +27,7 @@ export default function Footer({ onPageChange }: FooterProps) {
           {/* Column 1: Company Logo & Info */}
           <div className="space-y-4" id="footer-col-about">
             <div className="flex items-center cursor-pointer h-10 md:h-12" onClick={() => handleSectionClick('home')}>
-              <img src="/logo.png" alt="Hambar" className="h-full w-auto object-contain" />
+              <img src="/logo.png" alt="Hambar logo for business technology and AI services" className="h-full w-auto object-contain" />
             </div>
             <p className="text-neutral-400 text-sm leading-relaxed">
               Founded by Hamid Saleem & Babar Naeem. We help growing companies streamline operations, integrate custom-trained AI architectures, build software, and acquire organic buyer pipelines.

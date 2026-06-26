@@ -12,6 +12,7 @@ import ServiceDetailView from './components/ServiceDetailView';
 import AdminView from './components/AdminView';
 import { ActivePage } from './types';
 import { majorServicesDetails, serviceCategories } from './data';
+import { applySeo } from './lib/seo';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -106,6 +107,10 @@ export default function App() {
   const handleOpenBookingModal = (serviceName?: string) => {
     setBookingModal({ isOpen: true, serviceName });
   };
+
+  useEffect(() => {
+    applySeo(activePage, serviceSlug);
+  }, [activePage, serviceSlug]);
 
   const renderActiveView = () => {
     switch (activePage) {

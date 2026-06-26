@@ -130,7 +130,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
               <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight text-white font-sans leading-[1.1] flex flex-col gap-0 items-start select-none">
                 <img 
                   src="/Copy of Copy of hambat (1).png" 
-                  alt="Tech, AI & Softwares" 
+                  alt="Hambar technology, AI, and software services" 
                   className="h-11 sm:h-16 lg:h-24 w-auto object-contain select-none pointer-events-none self-start ml-0 sm:-ml-0.5 lg:-ml-1 -mb-1 sm:-mb-2 lg:-mb-3" 
                   referrerPolicy="no-referrer"
                 />
@@ -233,7 +233,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                         <div className="relative w-full max-w-[320px] aspect-square rounded-[2rem] overflow-hidden bg-neutral-100 border border-slate-200/50 shadow-md">
                           <img
                             src={item.image}
-                            alt={item.name}
+                            alt={`${item.name}, ${item.role}`}
                             referrerPolicy="no-referrer"
                             className="w-full h-full object-cover rounded-[2rem]"
                           />
@@ -292,7 +292,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                        <div className="h-[7.5rem] w-full rounded-xl overflow-hidden relative">
                          <img 
                            src={el.img} 
-                           alt={el.title} 
+                           alt={`${el.title} principle at Hambar`} 
                            referrerPolicy="no-referrer"
                            className="w-full h-full object-cover rounded-xl duration-500 hover:scale-105" 
                          />
@@ -406,9 +406,10 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                 <CardItem translateZ="40" className="w-full">
                   <div className="relative h-[380px] rounded-2xl overflow-hidden shadow-2xl flex flex-col justify-end p-8 group/item border border-white/5 select-none text-left">
                     {/* Background Image */}
-                    <div 
-                      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover/item:scale-105"
-                      style={{ backgroundImage: "url('/outcome first.png')" }}
+                    <img
+                      src="/outcome first.png"
+                      alt="Outcome-focused software and AI delivery by Hambar"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover/item:scale-105"
                     />
                     {/* Premium Radial Dark Overlays to ensure great contrast and readability */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/75 to-black/20 transition-opacity duration-300 group-hover/item:opacity-90" />
@@ -427,9 +428,10 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                 <CardItem translateZ="60" className="w-full">
                   <div className="relative h-[380px] rounded-2xl overflow-hidden shadow-2xl flex flex-col justify-end p-8 group/item border border-white/5 select-none text-left">
                     {/* Background Image */}
-                    <div 
-                      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover/item:scale-105"
-                      style={{ backgroundImage: "url('/deep technical.png')" }}
+                    <img
+                      src="/deep technical.png"
+                      alt="Deep technical software engineering and cloud architecture expertise"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover/item:scale-105"
                     />
                     {/* Premium Overlays */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/75 to-black/20 transition-opacity duration-300 group-hover/item:opacity-90" />
@@ -448,9 +450,10 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                 <CardItem translateZ="80" className="w-full">
                   <div className="relative h-[380px] rounded-2xl overflow-hidden shadow-2xl flex flex-col justify-end p-8 group/item border border-white/5 select-none text-left">
                     {/* Background Image */}
-                    <div 
-                      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover/item:scale-105"
-                      style={{ backgroundImage: "url('/client asset.png')" }}
+                    <img
+                      src="/client asset.png"
+                      alt="Secure client asset protection for software and AI systems"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover/item:scale-105"
                     />
                     {/* Premium Overlays */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/75 to-black/20 transition-opacity duration-300 group-hover/item:opacity-90" />
@@ -928,7 +931,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                {/* Background Image */}
                <img 
                  src={ind.img} 
-                 alt={ind.title}
+                 alt={`${ind.title} technology solutions by Hambar`}
                  referrerPolicy="no-referrer"
                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                />
@@ -1017,7 +1020,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
             {articles.map((art) => (
               <div key={art.id} className="bg-black/60 backdrop-blur-md rounded-2xl border border-neutral-800/50 overflow-hidden flex flex-col justify-between hover:border-neutral-700 transition-colors z-20">
                 {art.imageUrl && (
-                  <img src={art.imageUrl} alt={art.title} className="w-full h-40 object-cover cursor-pointer hover:opacity-90 transition-opacity" onClick={() => onPageChange('magazine')} />
+                  <img src={art.imageUrl} alt={`Cover image for ${art.title}`} className="w-full h-40 object-cover cursor-pointer hover:opacity-90 transition-opacity" onClick={() => onPageChange('magazine')} />
                 )}
                 <div className="p-6 space-y-4">
                   <div className="flex justify-between items-center text-[10px] font-mono text-neutral-400">
@@ -1031,7 +1034,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
                 </div>
                 <div className="p-6 pt-0 border-t border-neutral-800/50 flex items-center justify-between mt-4">
                   <div className="flex items-center gap-3">
-                    <img src={art.author.avatar} alt={art.author.name} className="w-8 h-8 rounded-full" referrerPolicy="no-referrer" />
+                    <img src={art.author.avatar} alt={`${art.author.name}, ${art.author.role}`} className="w-8 h-8 rounded-full" referrerPolicy="no-referrer" />
                     <div>
                       <p className="text-xs font-bold text-neutral-200 leading-none">{art.author.name}</p>
                       <p className="text-[10px] text-neutral-500 leading-none mt-1">{art.author.role}</p>
@@ -1160,7 +1163,7 @@ export default function HomeView({ onPageChange, onOpenBookingModal }: HomeViewP
               <div className="h-48 w-full relative">
                 <img 
                   src={trustElements[selectedPrinciple].img}
-                  alt={trustElements[selectedPrinciple].title}
+                  alt={`${trustElements[selectedPrinciple].title} principle at Hambar`}
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover"
                 />

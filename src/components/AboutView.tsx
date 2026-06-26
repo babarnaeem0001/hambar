@@ -96,12 +96,12 @@ export default function AboutView({ onPageChange, onOpenBookingModal }: AboutVie
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto" id="founders-grid">
               {/* Founder 1 */}
-              <div className="p-6 bg-slate-50 border border-slate-100 rounded-lg space-y-4 flex flex-col justify-between" id="founder-profile-hamid">
+              <article className="p-6 bg-slate-50 border border-slate-100 rounded-lg space-y-4 flex flex-col justify-between" id="founder-profile-hamid">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <img
                       src="/hamid.png"
-                      alt="Hamid Saleem"
+                      alt="Hamid Saleem, Hambar co-founder"
                       className="w-16 h-16 rounded-full border border-slate-200 object-cover"
                       referrerPolicy="no-referrer"
                     />
@@ -114,15 +114,15 @@ export default function AboutView({ onPageChange, onOpenBookingModal }: AboutVie
                     Hamid is responsible for product engineering, technology alignment, and systems architecture. He collaborates directly with the stakeholders to create technical requirements and develop high performance software systems.
                   </p>
                 </div>
-              </div>
+              </article>
 
               {/* Founder 2 */}
-              <div className="p-6 bg-slate-50 border border-slate-100 rounded-lg space-y-4 flex flex-col justify-between" id="founder-profile-babar">
+              <article className="p-6 bg-slate-50 border border-slate-100 rounded-lg space-y-4 flex flex-col justify-between" id="founder-profile-babar">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <img
                       src="/babar.png"
-                      alt="Babar Naeem"
+                      alt="Babar Naeem, Hambar co-founder"
                       className="w-16 h-16 rounded-full border border-slate-200 object-cover"
                       referrerPolicy="no-referrer"
                     />
@@ -135,7 +135,7 @@ export default function AboutView({ onPageChange, onOpenBookingModal }: AboutVie
                     Babar is responsible for product engineering, technology alignment, and systems architecture. He collaborates directly with the stakeholders to create technical requirements and develop high performance software systems.
                   </p>
                 </div>
-              </div>
+              </article>
             </div>
           </div>
         </div>

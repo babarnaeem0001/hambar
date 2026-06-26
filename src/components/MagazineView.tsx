@@ -139,7 +139,7 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
                 <div className="w-full h-auto max-h-[460px] overflow-hidden rounded-xl border border-slate-100 bg-slate-50 mt-4 shadow-xs">
                   <img 
                     src={activeArticle.imageUrl} 
-                    alt={activeArticle.title} 
+                    alt={`Cover image for ${activeArticle.title}`} 
                     className="w-full h-full object-cover" 
                   />
                 </div>
@@ -148,7 +148,7 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
               {/* Author & Stats bar */}
               <div className="flex flex-wrap items-center justify-between gap-4 py-3 border-y border-slate-100 text-xs mt-4">
                 <div className="flex items-center gap-2.5">
-                  <img src={activeArticle.author.avatar} alt={activeArticle.author.name} className="w-8 h-8 rounded-full border border-slate-200" referrerPolicy="no-referrer" />
+                  <img src={activeArticle.author.avatar} alt={`${activeArticle.author.name}, ${activeArticle.author.role}`} className="w-8 h-8 rounded-full border border-slate-200" referrerPolicy="no-referrer" />
                   <div>
                     <h4 className="font-bold text-slate-950 leading-tight">{activeArticle.author.name}</h4>
                     <p className="text-slate-500 text-[9px] leading-tight mt-0.5">{activeArticle.author.role}</p>
@@ -376,7 +376,7 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {filteredArticles.map((art) => (
-                        <div 
+                        <article 
                           key={art.id} 
                           onClick={() => {
                             setActiveArticle(art);
@@ -390,7 +390,7 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
                             {art.imageUrl ? (
                               <img 
                                 src={art.imageUrl} 
-                                alt={art.title} 
+                                alt={`Cover image for ${art.title}`} 
                                 className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-500" 
                               />
                             ) : (
@@ -414,7 +414,7 @@ export default function MagazineView({ onPageChange, onOpenBookingModal }: Magaz
                               Read Post <ArrowRight size={11} />
                             </span>
                           </div>
-                        </div>
+                        </article>
                       ))}
                     </div>
                   )}

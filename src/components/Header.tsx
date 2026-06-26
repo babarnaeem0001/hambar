@@ -64,7 +64,7 @@ export default function Header({ activePage, onPageChange, onOpenBookingModal }:
           id="logo-container"
         >
           <div className="shrink-0 flex items-center justify-center transition-transform group-hover:scale-105 duration-300">
-            <img src="/logo.png" alt="Hambar" className="h-8 md:h-10 w-auto object-contain" />
+            <img src="/logo.png" alt="Hambar logo for AI, software development, and SEO consultancy" className="h-8 md:h-10 w-auto object-contain" />
           </div>
         </div>
 
@@ -169,7 +169,7 @@ export default function Header({ activePage, onPageChange, onOpenBookingModal }:
                           <div className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-900">
                             <img 
                               src={articles[0]?.imageUrl || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80"}
-                              alt={articles[0]?.title || "Strategic Illustration"} 
+                              alt={articles[0]?.title ? `Cover image for ${articles[0].title}` : "Hambar strategic brief cover for business technology insights"} 
                               className="w-full h-full object-cover transition-transform duration-500 group-hover/bcard:scale-105"
                               referrerPolicy="no-referrer"
                             />

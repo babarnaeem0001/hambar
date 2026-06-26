@@ -10,11 +10,11 @@ interface ProjectsViewProps {
 
 export default function ProjectsView({ onPageChange }: ProjectsViewProps) {
   const customItems = projects.map((proj, idx) => (
-    <div key={proj.id} className="w-full bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-2xl flex flex-col h-[500px]">
+    <article key={proj.id} className="w-full bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-2xl flex flex-col h-[500px]">
       <div className="relative h-1/2 w-full overflow-hidden bg-neutral-100">
         <img 
           src={proj.image} 
-          alt={proj.title}
+          alt={`${proj.title} project for ${proj.client}`}
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-neutral-900/10 mix-blend-multiply" />
@@ -43,13 +43,14 @@ export default function ProjectsView({ onPageChange }: ProjectsViewProps) {
           </div>
           <button 
             onClick={() => onPageChange('contact')}
+            aria-label={`Discuss a project like ${proj.title}`}
             className="w-10 h-10 border border-neutral-200 rounded-full flex items-center justify-center shrink-0 hover:bg-neutral-950 hover:text-white transition-all cursor-pointer bg-white"
           >
             <ArrowUpRight size={18} />
           </button>
         </div>
       </div>
-    </div>
+    </article>
   ));
 
   return (
