@@ -11,8 +11,52 @@ import BookView from './components/BookView';
 import ServiceDetailView from './components/ServiceDetailView';
 import AdminView from './components/AdminView';
 import { ActivePage } from './types';
+import { majorServicesDetails, serviceCategories } from './data';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+
+const pagePaths: Partial<Record<ActivePage, string>> = {
+  home: '/',
+  services: '/services',
+  projects: '/projects',
+  magazine: '/magazine',
+  about: '/about',
+  contact: '/contact',
+  book: '/book',
+  admin: '/admin',
+};
+
+const serviceSlugs = new Set([
+  ...serviceCategories.flatMap((category) => category.services.map((service) => service.id)),
+  ...Object.keys(majorServicesDetails),
+]);
+
+const normalizePath = (path: string) => {
+  const cleanPath = path.replace(/\/+$/, '');
+  return cleanPath || '/';
+};
+
+const getRouteState = (path: string, hash: string): { page: ActivePage; slug?: string } => {
+  if (hash === '#admin') {
+    return { page: 'admin' };
+  }
+
+  const cleanPath = normalizePath(path);
+  const serviceMatch = cleanPath.match(/^\/services\/([^/]+)$/);
+
+  if (serviceMatch) {
+    const slug = decodeURIComponent(serviceMatch[1]);
+    if (serviceSlugs.has(slug)) {
+      return { page: 'service-detail', slug };
+    }
+    return { page: 'services' };
+  }
+
+  const matchedPage = (Object.entries(pagePaths) as [ActivePage, string][])
+    .find(([, pagePath]) => pagePath === cleanPath)?.[0];
+
+  return { page: matchedPage || 'home' };
+};
 
 export default function App() {
   const [activePage, setActivePage] = useState<ActivePage>('home');
@@ -22,15 +66,13 @@ export default function App() {
     serviceName: undefined,
   });
 
-  // Support navigating to and matching /admin and hash shifts
+  // Support direct navigation to canonical public routes and /admin.
   useEffect(() => {
     const handleUrlRoute = () => {
-      const path = window.location.pathname;
-      const hash = window.location.hash;
-      if (path === '/admin' || hash === '#admin') {
-        setActivePage('admin');
-        window.scrollTo({ top: 0, behavior: 'instant' });
-      }
+      const route = getRouteState(window.location.pathname, window.location.hash);
+      setActivePage(route.page);
+      setServiceSlug(route.slug || '');
+      window.scrollTo({ top: 0, behavior: 'instant' });
     };
 
     handleUrlRoute();
@@ -45,34 +87,19 @@ export default function App() {
 
   // Smooth scroll to top on page variations
   const handlePageChange = (page: ActivePage, slug?: string) => {
-    if (page === 'book') {
-      // Go to dedicated page
-      setBookingModal({ isOpen: false, serviceName: undefined });
-      setActivePage('book');
-      if (window.location.pathname === '/admin' || window.location.hash === '#admin') {
-        window.history.pushState(null, '', '/');
-      }
-      window.scrollTo({ top: 0, behavior: 'instant' });
-      return;
-    }
-    
-    // Sync browser URL bar state smoothly
-    if (page === 'admin') {
-      if (window.location.pathname !== '/admin') {
-        window.history.pushState(null, '', '/admin');
-      }
-    } else {
-      if (window.location.pathname === '/admin' || window.location.hash === '#admin') {
-        window.history.pushState(null, '', '/');
-      }
+    const nextPage: ActivePage = page === 'services' && slug ? 'service-detail' : page;
+    const nextPath = nextPage === 'service-detail' && slug
+      ? `/services/${encodeURIComponent(slug)}`
+      : pagePaths[nextPage] || '/';
+
+    setBookingModal({ isOpen: false, serviceName: undefined });
+    setActivePage(nextPage);
+    setServiceSlug(nextPage === 'service-detail' && slug ? slug : '');
+
+    if (window.location.pathname !== nextPath || window.location.hash) {
+      window.history.pushState(null, '', nextPath);
     }
 
-    setActivePage(page);
-    if (slug) {
-      setServiceSlug(slug);
-    } else {
-      setServiceSlug('');
-    }
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
